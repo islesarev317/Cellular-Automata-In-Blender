@@ -19,9 +19,9 @@ bpy.context.scene.frame_end = step_count * step_delta
 for i in range(n):
         for j in range(n):
             for k in range(n):
+                random_state = random.choice([0, 1])
                 bpy.ops.mesh.primitive_cube_add(size=1, location=(i, j, k))
                 grid[i][j][k] = bpy.context.active_object
-                random_state = random.choice([0, 1])
                 grid[i][j][k].scale.xyz = random_state
                 grid[i][j][k]["state"] = random_state
                 grid[i][j][k]["previous"] = random_state
@@ -34,7 +34,8 @@ for step in range(step_count):
     for i in range(n):
             for j in range(n):
                 for k in range(n):
-                    grid[i][j][k]["previous"] = grid[i][j][k]["state"]
+                    current_cube = grid[i][j][k]
+                    current_cube["previous"] = current_cube["state"]
                     neighbours = 0
                     for delta in offsets:
                         x = i + delta[0]
@@ -43,14 +44,14 @@ for step in range(step_count):
                         if (0 <= x < n) and (0 <= y < n) and (0 <= z < n):
                             neighbours += grid[x][y][z]["previous"]
                     print("neighbours: " + str(neighbours))
-                    if grid[i][j][k]["previous"] == 0 and neighbours == 4:
-                        grid[i][j][k]["state"] = 1
-                        grid[i][j][k].scale.xyz = 1
-                        grid[i][j][k].keyframe_insert("scale", frame=current_frame)
-                    elif grid[i][j][k]["previous"] == 1 and neighbours not in [4,5]:
-                        grid[i][j][k]["state"] = 0
-                        grid[i][j][k].scale.xyz = 0
-                        grid[i][j][k].keyframe_insert("scale", frame=current_frame)
+                    if current_cube["previous"] == 0 and neighbours == 4:
+                        current_cube["state"] = 1
+                        current_cube.scale.xyz = 1
+                        current_cube.keyframe_insert("scale", frame=current_frame)
+                    elif current_cube["previous"] == 1 and neighbours not in [4,5]:
+                        current_cube["state"] = 0
+                        current_cube.scale.xyz = 0
+                        current_cube.keyframe_insert("scale", frame=current_frame)
                     else:
                         # you can comment line below and get interesting effect
-                        grid[i][j][k].keyframe_insert("scale", frame=current_frame)
+                        current_cube.keyframe_insert("scale", frame=current_frame)
