@@ -16,7 +16,7 @@ def bPrint(data):
         for area in screen.areas:
             if area.type == 'CONSOLE':
                 override = {'window': window, 'screen': screen, 'area': area}
-                data = datetime.now().strftime("%H:%M:%S")  + " - blender script: " + data
+                data = datetime.now().strftime("%H:%M:%S") + " - blender script: " + data
                 bpy.ops.console.scrollback_append(override, text=str(data), type="OUTPUT")
 
 # ------------------------------------------
