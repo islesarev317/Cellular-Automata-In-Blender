@@ -16,28 +16,36 @@ def bPrint(data):
         for area in screen.areas:
             if area.type == 'CONSOLE':
                 override = {'window': window, 'screen': screen, 'area': area}
-                data = datetime.now().strftime("%H:%M:%S") + " - blender script: " + data
+                data = "blender script: " + data
                 bpy.ops.console.scrollback_append(override, text=str(data), type="OUTPUT")
 
 # ------------------------------------------
-bPrint("(01) --- start ---")
+bPrint("------------ START ------------")
+bPrint("(0) DECLARE VARS".ljust(31, "-"))
+first_time = time()
+stage_time = time()
 # ------------------------------------------
 
-n = 15
+n = 15 # not over 20
 step_count = 20
 step_delta = 10
 
 # ------------------------------------------
-bPrint(f"(02) n={n}, steps={step_count}")
+bPrint("| --- time = %s" % datetime.now().strftime("%H:%M:%S"))
+bPrint(f"| --- n = {n}, steps = {step_count}")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("(1) DECLARE MATRIX ".ljust(31, "-"))
+stage_time = time()
 # ------------------------------------------
 
 current_frame = 0
-start_time = time()
 grid = [[[None for i in range(n)] for j in range(n)] for k in range(n)]
 offsets = [(i, j, k) for i in range(-1,2) for j in range(-1,2) for k in range(-1,2) if not (i==j==k==0)]
 
 # ------------------------------------------
-bPrint("(03) prepring")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("(2) PREPARING ".ljust(31, "-"))
+stage_time = time()
 # ------------------------------------------
 
 bpy.context.scene.frame_end = step_count * step_delta
@@ -46,20 +54,24 @@ bpy.ops.object.delete()
 bpy.ops.outliner.orphans_purge()
 
 # ------------------------------------------
-bPrint("(04) cube for copy")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("(3) CUBE FOR COPY ".ljust(31, "-"))
+stage_time = time()
 # ------------------------------------------
 
 bpy.ops.mesh.primitive_cube_add(size=1, location=(10, 0, 0))
 cube_for_copy = bpy.context.active_object
 
 # ------------------------------------------
-bPrint("(05) init grid")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("(4) INIT GRID ".ljust(31, "-"))
+stage_time = time()
 # ------------------------------------------
 
 for i in range(n):
         for j in range(n):
             for k in range(n):
-                random_state = random.choice([0, 1])
+                random_state = random.choice([0, 0, 1])
                 grid[i][j][k] = cube_for_copy.copy()
                 grid[i][j][k].data = cube_for_copy.data.copy()
                 grid[i][j][k].location = (i, j, k)
@@ -70,7 +82,9 @@ for i in range(n):
                 bpy.context.collection.objects.link(grid[i][j][k])
 
 # ------------------------------------------
-bPrint("(06) calculate animation")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("(5) CALCULATE ANIMATION ".ljust(31, "-"))
+stage_time = time()
 # ------------------------------------------
 
 for step in range(step_count):
@@ -100,13 +114,17 @@ for step in range(step_count):
                         current_cube.keyframe_insert("scale", frame=current_frame)
 
 # ------------------------------------------
-bPrint("(07) unlink cube")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("(6) UNLINK CUBE ".ljust(31, "-"))
+stage_time = time()
 # ------------------------------------------
 
 for collection in cube_for_copy.users_collection:
     collection.objects.unlink(cube_for_copy)
 
 # ------------------------------------------
-bPrint("total %s seconds" % (time() - start_time))
-bPrint("(08) --- end ---")
+bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))
+bPrint("| --- time = %s" % datetime.now().strftime("%H:%M:%S"))
+bPrint("| --- total seconds = " + str(round(time() - first_time, 3)))
+bPrint("------------ END --------------")
 # ------------------------------------------
