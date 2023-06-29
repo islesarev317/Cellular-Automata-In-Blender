@@ -94,6 +94,7 @@ def addCube(location, size, name):
 # ====================================================================================
 
 def isInside(p, obj):
+    p = p - obj.location
     result, point, normal, face = obj.closest_point_on_mesh(p, distance=100)
     p2 = point - p
     v = p2.dot(normal)
@@ -103,9 +104,12 @@ def isInside(p, obj):
 # ====================================================================================
 
 def objToVTensor(obj, grain):
-    dim = np.array([int(d // grain) for d in obj.dimensions])
-    reminder = np.array([(d % grain) / 2 for d in obj.dimensions])
-    corner = (np.array(obj.bound_box[0]) + np.array(obj.location) + grain / 2 + reminder) // grain
+    realDim = np.array(obj.dimensions)
+    realCorner = np.array(obj.bound_box[0]) * np.array(obj.scale.xyz) + np.array(obj.location)
+    padding = (realDim % grain) / 2
+    firstCell = realCorner + (grain / 2) + padding
+    dim = np.int64(realDim // grain)
+    corner = np.int64((firstCell / grain).round())
 
     tensor = VTensor(corner, dim)
 
@@ -128,10 +132,15 @@ def realizeTensor(tensor, grain):
 
 # ====================================================================================
 
-obj = bpy.data.objects["Icosphere"]
-grain = 0.5
+ico = bpy.data.objects["Icosphere"]
+cube = bpy.data.objects["Cube"]
+grain = 0.3
 
-tensor = objToVTensor(obj, grain)
-realizeTensor(tensor, grain)
+tensorCube = objToVTensor(cube, grain)
+tensorIco = objToVTensor(ico, grain)
+tensorSum = VTensor.union(tensorIco, tensorCube)
 
-print(t)
+realizeTensor(tensorSum, grain)
+
+# print(t)
+
