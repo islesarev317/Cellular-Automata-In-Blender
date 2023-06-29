@@ -75,7 +75,7 @@ def print(data):
 
 # ====================================================================================
 
-def addCube(location, size, name):
+def addCube(location, size, name, collection):
     try:
         cubeForCopy = bpy.data.objects["cubeForCopy"]
     except KeyError:
@@ -87,14 +87,15 @@ def addCube(location, size, name):
     newCube.location = location
     newCube.scale.xyz = size
     newCube.name = name
-    bpy.context.collection.objects.link(newCube)
+    collection.objects.link(newCube)
     return newCube
 
 
 # ====================================================================================
 
 def isInside(p, obj):
-    p = p - obj.location
+    # p = p - obj.location
+    p = obj.matrix_world.inverted() @ p
     result, point, normal, face = obj.closest_point_on_mesh(p, distance=100)
     p2 = point - p
     v = p2.dot(normal)
@@ -103,13 +104,38 @@ def isInside(p, obj):
 
 # ====================================================================================
 
+def getRealBoundBox(obj):
+    bb_vertices = [mathutils.Vector(v) for v in obj.bound_box]
+    mat = obj.matrix_world
+    world_bb_vertices = np.array([mat @ v for v in bb_vertices])
+
+    return world_bb_vertices
+
+
+# ====================================================================================
+
 def objToVTensor(obj, grain):
-    realDim = np.array(obj.dimensions)
-    realCorner = np.array(obj.bound_box[0]) * np.array(obj.scale.xyz) + np.array(obj.location)
+    realBoundBox = getRealBoundBox(obj)
+
+    minCorner = realBoundBox.min(axis=0)
+    maxCorner = realBoundBox.max(axis=0)
+    realDim = maxCorner - minCorner
+    realCorner = minCorner
+
+    # realDim = np.array(obj.dimensions)
+    # realCorner = np.array(obj.bound_box[0]) * np.array(obj.scale.xyz) + np.array(obj.location)
+
     padding = (realDim % grain) / 2
     firstCell = realCorner + (grain / 2) + padding
     dim = np.int64(realDim // grain)
     corner = np.int64((firstCell / grain).round())
+
+    print("---")
+    print(realDim)
+    print(realCorner)
+    print("---")
+
+    bpy.data.objects["Empty"].location = realCorner
 
     tensor = VTensor(corner, dim)
 
@@ -123,24 +149,48 @@ def objToVTensor(obj, grain):
 
 # ====================================================================================
 
-def realizeTensor(tensor, grain):
+def realizeTensor(tensor, grain, collection):
+    # objList = []
+
     for point in np.ndindex(tensor.dim):
         if tensor[point] != 0:
             loc = tensor.pointToGlobal(point) * grain
-            newCube = addCube(location=loc, size=grain, name="Cell")
+            newCube = addCube(location=loc, size=grain, name="Cell", collection=collection)
+
+    # return objList
 
 
 # ====================================================================================
 
-ico = bpy.data.objects["Icosphere"]
-cube = bpy.data.objects["Cube"]
-grain = 0.3
+def updateScene(self, context):
+    # ico = bpy.data.objects["Icosphere"]
+    cube = bpy.data.objects["Cube"]
+    collection = bpy.data.collections["Collection Cubes"]
+    grain = 0.6
 
-tensorCube = objToVTensor(cube, grain)
-tensorIco = objToVTensor(ico, grain)
-tensorSum = VTensor.union(tensorIco, tensorCube)
+    for obj in collection.objects:
+        bpy.data.objects.remove(obj, do_unlink=True)
 
-realizeTensor(tensorSum, grain)
+    tensorCube = objToVTensor(cube, grain)
+    # tensorIco = objToVTensor(ico, grain)
+    # tensorSum = VTensor.union(tensorIco, tensorCube)
 
-# print(t)
+    realizeTensor(tensorCube, grain, collection)
 
+    bpy.ops.object.select_all(action='DESELECT')
+
+
+# ====================================================================================
+
+bpy.app.handlers.frame_change_pre.clear()
+bpy.app.handlers.frame_change_pre.append(updateScene)
+
+for obj in bpy.data.collections["Collection Cubes"].objects:
+    bpy.data.objects.remove(obj, do_unlink=True)
+
+# ====================================================================================
+
+# cube = bpy.data.objects["Cube"]
+# tensorCube = objToVTensor(cube, 0.5)
+
+# updateScene(None, None)
