@@ -49,18 +49,6 @@ class VTensor:
         return res
 
 
-t1 = VTensor(corner=(2, 2), dim=(4, 3))
-t1.value += 1
-print("T1 =", t1, end="\n\n")
-
-t2 = VTensor(corner=(7, 4), dim=(2, 2))
-t2.value += 2
-print("T2 =", t2, end="\n\n")
-
-t3 = VTensor.union(t1, t2)
-print("T3 =", t3, end="\n\n")
-
-
 # ====================================================================================
 
 def print(data):
@@ -94,7 +82,6 @@ def addCube(location, size, name, collection):
 # ====================================================================================
 
 def isInside(p, obj):
-    # p = p - obj.location
     p = obj.matrix_world.inverted() @ p
     result, point, normal, face = obj.closest_point_on_mesh(p, distance=100)
     p2 = point - p
@@ -108,7 +95,6 @@ def getRealBoundBox(obj):
     bb_vertices = [mathutils.Vector(v) for v in obj.bound_box]
     mat = obj.matrix_world
     world_bb_vertices = np.array([mat @ v for v in bb_vertices])
-
     return world_bb_vertices
 
 
@@ -116,27 +102,14 @@ def getRealBoundBox(obj):
 
 def objToVTensor(obj, grain):
     realBoundBox = getRealBoundBox(obj)
-
     minCorner = realBoundBox.min(axis=0)
     maxCorner = realBoundBox.max(axis=0)
     realDim = maxCorner - minCorner
     realCorner = minCorner
-
-    # realDim = np.array(obj.dimensions)
-    # realCorner = np.array(obj.bound_box[0]) * np.array(obj.scale.xyz) + np.array(obj.location)
-
     padding = (realDim % grain) / 2
     firstCell = realCorner + (grain / 2) + padding
     dim = np.int64(realDim // grain)
     corner = np.int64((firstCell / grain).round())
-
-    print("---")
-    print(realDim)
-    print(realCorner)
-    print("---")
-
-    bpy.data.objects["Empty"].location = realCorner
-
     tensor = VTensor(corner, dim)
 
     for point in np.ndindex(tensor.dim):
@@ -162,35 +135,36 @@ def realizeTensor(tensor, grain, collection):
 
 # ====================================================================================
 
-def updateScene(self, context):
-    # ico = bpy.data.objects["Icosphere"]
-    cube = bpy.data.objects["Cube"]
-    collection = bpy.data.collections["Collection Cubes"]
-    grain = 0.6
-
+def clearCollection(collection):
     for obj in collection.objects:
         bpy.data.objects.remove(obj, do_unlink=True)
 
-    tensorCube = objToVTensor(cube, grain)
-    # tensorIco = objToVTensor(ico, grain)
-    # tensorSum = VTensor.union(tensorIco, tensorCube)
 
-    realizeTensor(tensorCube, grain, collection)
+# ====================================================================================
+
+def updateScene(self, context):
+    ico = bpy.data.objects["Icosphere"]
+    cube = bpy.data.objects["Cube"]
+    collection = bpy.data.collections["Collection Cubes"]
+    grain = 1
+
+    clearCollection(collection)
+
+    tensorCube = objToVTensor(cube, grain)
+    tensorIco = objToVTensor(ico, grain)
+    tensorSum = VTensor.union(tensorIco, tensorCube)
+
+    realizeTensor(tensorSum, grain, collection)
 
     bpy.ops.object.select_all(action='DESELECT')
 
 
 # ====================================================================================
 
+clearCollection(bpy.data.collections["Collection Cubes"])
+
 bpy.app.handlers.frame_change_pre.clear()
 bpy.app.handlers.frame_change_pre.append(updateScene)
 
-for obj in bpy.data.collections["Collection Cubes"].objects:
-    bpy.data.objects.remove(obj, do_unlink=True)
 
-# ====================================================================================
 
-# cube = bpy.data.objects["Cube"]
-# tensorCube = objToVTensor(cube, 0.5)
-
-# updateScene(None, None)
