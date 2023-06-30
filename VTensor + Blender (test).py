@@ -137,6 +137,16 @@ def isInside(p, obj):
 
 # ====================================================================================
 
+def isFace(p, obj, grain):
+    p = obj.matrix_world.inverted() @ p
+    result, point, normal, face = obj.closest_point_on_mesh(p, distance=100)
+    p2 = point - p
+    v = p2.dot(normal)
+    return not (v < 0.0) and np.linalg.norm(p2) < grain / 2
+
+
+# ====================================================================================
+
 def getRealBoundBox(obj):
     bb_vertices = [mathutils.Vector(v) for v in obj.bound_box]
     mat = obj.matrix_world
@@ -161,7 +171,8 @@ def objToTensor(obj, grain, carve=True):
     if carve:
         for point in np.ndindex(tensor.dim):
             loc = mathutils.Vector(tuple(tensor.pointToGlobal(point) * grain))
-            if isInside(loc, obj):
+            # if isInside(loc, obj):
+            if isFace(loc, obj, grain):
                 tensor[point] = 1
 
     return tensor
@@ -177,45 +188,55 @@ def clearCollection(collection):
 # ====================================================================================
 
 def CreateObj(location, val, grain):
-    size = grain
+    size = 0
     name = "Cell"
     collection = bpy.data.collections["Collection Cubes"]
-    return addCube(location, size, name, collection)
+    obj = addCube(location, size, name, collection)
+    return obj
 
 
 # ====================================================================================
 
-def UpdateObj(obj, val, grain):
-    obj.scale.xyz = 0 if val == 0 else grain
+def UpdateObj(frameStep):
+    def UpdateObj(obj, val, grain):
+        obj.keyframe_insert("scale", frame=bpy.context.scene.frame_current - frameStep)
+        obj.scale.xyz = 0 if val == 0 else grain
+        obj.keyframe_insert("scale", frame=bpy.context.scene.frame_current)
+
+    return UpdateObj
 
 
 # ====================================================================================
 
-def getUpdateScene():
-    # ico = bpy.data.objects["Icosphere"]
-    cube = bpy.data.objects["Cube"]
-    grain = 0.7
-    instance = Instance(grain, CreateObj, UpdateObj)
+def getUpdateScene(grain, frameStep, *objectList):
+    instance = Instance(grain, CreateObj, UpdateObj(frameStep))
+    bakedKeyframes = []
 
     def updateScene(self, context):
 
         try:
 
-            # nonlocal ico
-            nonlocal cube
             nonlocal grain
             nonlocal instance
+            nonlocal frameStep
+            nonlocal bakedKeyframes
+            nonlocal objectList
 
-            tensorCube = objToTensor(cube, grain)
-            # tensorIco = objToTensor(ico, grain)
-            # tensorSum = VTensor.union(tensorCube, tensorIco)
+            frame = bpy.context.scene.frame_current
 
-            # instance.update(tensorSum)
-            instance.update(tensorCube)
+            if frame % frameStep == 1 and frame not in bakedKeyframes:
 
-            bpy.ops.object.select_all(action='DESELECT')
+                tensorSum = VTensor((0, 0, 0), (1, 1, 1))
+
+                for obj in objectList:
+                    tensorObj = objToTensor(obj, grain)
+                    tensorSum = VTensor.union(tensorSum, tensorObj)
+                    instance.update(tensorSum)
+                    bakedKeyframes.append(frame)
+                    bpy.ops.object.select_all(action='DESELECT')
 
         except Exception as e:
+
             print("---")
             print(traceback.format_exc())
 
@@ -226,11 +247,11 @@ def getUpdateScene():
 
 clearCollection(bpy.data.collections["Collection Cubes"])
 
-updateScene = getUpdateScene()
+grain = 0.5
+frameStep = 10
+objList = [bpy.data.objects["Cube"], bpy.data.objects["Icosphere"]]
+
+updateScene = getUpdateScene(grain, frameStep, *objList)
 
 bpy.app.handlers.frame_change_pre.clear()
 bpy.app.handlers.frame_change_pre.append(updateScene)
-
-
-
-
