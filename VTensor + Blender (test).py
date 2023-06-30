@@ -1,6 +1,8 @@
 import bpy
 import numpy as np
 import mathutils
+import sys, os
+import traceback
 
 
 class VTensor:
@@ -47,6 +49,50 @@ class VTensor:
             res[res.pointToLocal(T2.pointToGlobal(point))] += T2[point]
 
         return res
+
+
+# ====================================================================================
+
+class Instance:
+
+    def __init__(self, grain, createObj, updateObj):
+
+        self.active_objects = {}
+        self.all_objects = {}
+        self.grain = grain
+
+        # functions
+        self.createObj = createObj
+        self.updateObj = updateObj
+
+    def update(self, tensor):
+
+        active = set(self.active_objects.keys())
+        all = set(self.all_objects.keys())
+        t = set(tuple(tensor.pointToGlobal(p)) for p in np.ndindex(tensor.dim) if tensor[p] != 0)
+
+        decrease = active - t
+        increase = t - active
+        create = increase - all
+
+        # decrease
+        for p in decrease:
+            obj = self.active_objects.pop(p)
+            val = 0
+            self.updateObj(obj, val, self.grain)
+
+        # create
+        for p in create:
+            val = tensor[tensor.pointToLocal(p)]
+            location = tuple(np.array(p) * self.grain)
+            self.all_objects[p] = self.createObj(location, val, self.grain)
+
+        # increase
+        for p in increase:
+            obj = self.all_objects[p]
+            val = tensor[tensor.pointToLocal(p)]
+            self.active_objects[p] = obj
+            self.updateObj(obj, val, self.grain)
 
 
 # ====================================================================================
@@ -100,7 +146,7 @@ def getRealBoundBox(obj):
 
 # ====================================================================================
 
-def objToVTensor(obj, grain):
+def objToTensor(obj, grain, carve=True):
     realBoundBox = getRealBoundBox(obj)
     minCorner = realBoundBox.min(axis=0)
     maxCorner = realBoundBox.max(axis=0)
@@ -112,25 +158,13 @@ def objToVTensor(obj, grain):
     corner = np.int64((firstCell / grain).round())
     tensor = VTensor(corner, dim)
 
-    for point in np.ndindex(tensor.dim):
-        loc = mathutils.Vector(tuple(tensor.pointToGlobal(point) * grain))
-        if isInside(loc, obj):
-            tensor[point] = 1
+    if carve:
+        for point in np.ndindex(tensor.dim):
+            loc = mathutils.Vector(tuple(tensor.pointToGlobal(point) * grain))
+            if isInside(loc, obj):
+                tensor[point] = 1
 
     return tensor
-
-
-# ====================================================================================
-
-def realizeTensor(tensor, grain, collection):
-    # objList = []
-
-    for point in np.ndindex(tensor.dim):
-        if tensor[point] != 0:
-            loc = tensor.pointToGlobal(point) * grain
-            newCube = addCube(location=loc, size=grain, name="Cell", collection=collection)
-
-    # return objList
 
 
 # ====================================================================================
@@ -142,29 +176,61 @@ def clearCollection(collection):
 
 # ====================================================================================
 
-def updateScene(self, context):
-    ico = bpy.data.objects["Icosphere"]
-    cube = bpy.data.objects["Cube"]
+def CreateObj(location, val, grain):
+    size = grain
+    name = "Cell"
     collection = bpy.data.collections["Collection Cubes"]
-    grain = 1
+    return addCube(location, size, name, collection)
 
-    clearCollection(collection)
 
-    tensorCube = objToVTensor(cube, grain)
-    tensorIco = objToVTensor(ico, grain)
-    tensorSum = VTensor.union(tensorIco, tensorCube)
+# ====================================================================================
 
-    realizeTensor(tensorSum, grain, collection)
+def UpdateObj(obj, val, grain):
+    obj.scale.xyz = 0 if val == 0 else grain
 
-    bpy.ops.object.select_all(action='DESELECT')
+
+# ====================================================================================
+
+def getUpdateScene():
+    # ico = bpy.data.objects["Icosphere"]
+    cube = bpy.data.objects["Cube"]
+    grain = 0.7
+    instance = Instance(grain, CreateObj, UpdateObj)
+
+    def updateScene(self, context):
+
+        try:
+
+            # nonlocal ico
+            nonlocal cube
+            nonlocal grain
+            nonlocal instance
+
+            tensorCube = objToTensor(cube, grain)
+            # tensorIco = objToTensor(ico, grain)
+            # tensorSum = VTensor.union(tensorCube, tensorIco)
+
+            # instance.update(tensorSum)
+            instance.update(tensorCube)
+
+            bpy.ops.object.select_all(action='DESELECT')
+
+        except Exception as e:
+            print("---")
+            print(traceback.format_exc())
+
+    return updateScene
 
 
 # ====================================================================================
 
 clearCollection(bpy.data.collections["Collection Cubes"])
 
+updateScene = getUpdateScene()
+
 bpy.app.handlers.frame_change_pre.clear()
 bpy.app.handlers.frame_change_pre.append(updateScene)
+
 
 
 
