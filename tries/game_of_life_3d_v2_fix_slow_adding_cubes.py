@@ -79,7 +79,7 @@ for i in range(n):
                 grid[i][j][k]["state"] = random_state
                 grid[i][j][k]["previous"] = random_state
                 grid[i][j][k].keyframe_insert("scale", frame=current_frame)
-                bpy.context.collection.objects.link(grid[i][j][k])
+                bpy.context.__collection.objects.link(grid[i][j][k])
 
 # ------------------------------------------
 bPrint("| --- seconds = " + str(round(time() - stage_time, 3)))

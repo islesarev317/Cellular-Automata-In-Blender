@@ -57,6 +57,10 @@ class LocatedTensor:
         return "{" + str(self.corner) + ",\n" + result + "}"
 
     @property
+    def all_points(self):
+        return np.ndindex(self.dim)
+
+    @property
     def dim(self):
         return self.__value.shape
 
@@ -84,7 +88,7 @@ class LocatedTensor:
             for point in np.ndindex(t.dim):
                 a = res[res.point_to_local(t.point_to_global(point))]
                 b = t[point]
-                c = ops(a,b)
+                c = ops(a, b)
                 res[res.point_to_local(t.point_to_global(point))] = c
 
         return res
@@ -112,8 +116,8 @@ class LocatedTensor:
                     offset = np.zeros(ndim)
                     offset[i] = 1
                     for sign in [1, -1]:
-                        n = tuple(np.int64(point + (offset * sign)))
-                        if n[i] >= 0 and n[i] < dim[i]:
+                        n = tuple(np.int64(np.array(point) + (offset * sign)))
+                        if 0 <= n[i] < dim[i]:
                             cnt += 0 if self[n] == 0 else 1
                 if cnt == len(point) * 2:
                     self[point] = 0
