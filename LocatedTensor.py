@@ -98,6 +98,11 @@ class LocatedTensor:
         return cls.__base_ops(T1, T2, lambda a, b: a - b)
 
     def hollow(self):
+        """
+        [[1 1 1]    [[1 1 1]
+         [1 1 1] =>  [1 0 1]
+         [1 1 1]]    [1 1 1]]
+        """
         dim = self.dim
         ndim = len(dim)
         for point in np.ndindex(dim):
