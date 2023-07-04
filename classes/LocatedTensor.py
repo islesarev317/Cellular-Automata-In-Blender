@@ -75,18 +75,27 @@ class LocatedTensor:
         return tuple(point - self.corner)
 
     @classmethod
-    def union(cls, T1, T2):
+    def __base_ops(cls, T1, T2, ops):
         corner = tuple(np.vstack((T1.corner, T2.corner)).min(axis=0))
         dim = tuple(np.vstack((T1.opp_corner, T2.opp_corner)).max(axis=0) - corner + 1)
         res = cls.zeros(corner, dim=dim)
 
-        for point in np.ndindex(T1.dim):
-            res[res.point_to_local(T1.point_to_global(point))] += T1[point]
-
-        for point in np.ndindex(T2.dim):
-            res[res.point_to_local(T2.point_to_global(point))] += T2[point]
+        for t in [T1, T2]:
+            for point in np.ndindex(t.dim):
+                a = res[res.point_to_local(t.point_to_global(point))]
+                b = t[point]
+                c = ops(a,b)
+                res[res.point_to_local(t.point_to_global(point))] = c
 
         return res
+
+    @classmethod
+    def union(cls, T1, T2):
+        return cls.__base_ops(T1, T2, lambda a, b: a + b)
+
+    @classmethod
+    def diff(cls, T1, T2):
+        return cls.__base_ops(T1, T2, lambda a, b: a - b)
 
     def hollow(self):
         dim = self.dim
