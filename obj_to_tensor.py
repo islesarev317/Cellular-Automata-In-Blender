@@ -28,12 +28,12 @@ def obj_to_tensor(obj, grain):
     real_corner = min_corner
     padding = (real_dim % grain) / 2
     first_cell = real_corner + (grain / 2) + padding
-    dim = np.int64(real_dim // grain)
-    corner = np.int64((first_cell / grain).round())
+    dim = tuple(np.int64(real_dim // grain))
+    corner = tuple(np.int64((first_cell / grain).round()))
     tensor = LocatedTensor.zeros(corner, dim=dim)
 
     for point in np.ndindex(tensor.dim):
-        loc = mathutils.Vector(tuple(tensor.pointToGlobal(point) * grain))
+        loc = mathutils.Vector(tuple(x * grain for x in tensor.point_to_global(point)))
         if is_inside(loc, obj):
             tensor[point] = 1
 
