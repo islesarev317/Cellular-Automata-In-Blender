@@ -61,6 +61,10 @@ class LocatedTensor:
         return np.ndindex(self.dim)
 
     @property
+    def not_null_points(self):
+        return list(zip(*np.nonzero(self.__value != 0)))
+
+    @property
     def dim(self):
         return self.__value.shape
 

@@ -1,6 +1,6 @@
 import numpy as np
 import mathutils
-from LocatedTensor import LocatedTensor
+from tensor import LocatedTensor
 
 distance = 100
 
@@ -20,7 +20,7 @@ def get_real_bound_box(obj):
     return world_bb_vertices
 
 
-def objToTensor(obj, grain):
+def obj_to_tensor(obj, grain):
     real_bound_box = get_real_bound_box(obj)
     min_corner = real_bound_box.min(axis=0)
     max_corner = real_bound_box.max(axis=0)

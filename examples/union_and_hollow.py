@@ -1,4 +1,4 @@
-from LocatedTensor import LocatedTensor
+from tensor import LocatedTensor
 
 a = LocatedTensor.zeros(corner=(1, 1, 1), dim=(5, 4, 3))
 a[1:4, 0:3] = 1
@@ -11,3 +11,5 @@ print(b)
 
 c = LocatedTensor.union(a, b)
 print(c)
+
+print(type(a.all_points[0]))
