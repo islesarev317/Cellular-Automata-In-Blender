@@ -6,7 +6,7 @@ class Instance:
     cell_name = "Cell"
     scale_factor = 0.9
 
-    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False):
+    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, bake_interval=1):
         self.__tensor = None
         self.virtual_function = virtual_function
         self.grain = grain
@@ -15,6 +15,7 @@ class Instance:
         self.all_objects = {}
         self.reserve = reserve
         self.bake = bake
+        self.bake_interval = bake_interval
         self.baked_frames = []
 
     @staticmethod
@@ -22,8 +23,8 @@ class Instance:
         def output_func(self, obj, value):
             if self.bake:
                 current_frame = blu.current_frame()
-                obj.keyframe_insert("scale", frame=current_frame-1)
-                obj.keyframe_insert("location", frame=current_frame-1)
+                obj.keyframe_insert("scale", frame=current_frame-self.bake_interval)
+                obj.keyframe_insert("location", frame=current_frame-self.bake_interval)
                 input_func(self, obj, value)
                 obj.keyframe_insert("scale", frame=current_frame)
                 obj.keyframe_insert("location", frame=current_frame)

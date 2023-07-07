@@ -24,7 +24,7 @@ from utils import catch_scene, clear_collection
 # =============================
 
 # params
-frame_step = 4
+frame_step = 15
 grain = 0.5
 collection = bpy.data.collections["Collection Cells"]
 image = bpy.data.objects["Image"]
@@ -42,9 +42,12 @@ c = VirtualObject(bpy.data.objects["Box"], grain)
 vf = a.hollow() - c
 
 # realize
-instance = Instance(vf, grain, collection, image, bake=True, reserve=True)
+instance = Instance(vf, grain, collection, image, bake=True, reserve=True, bake_interval=10)
 instance.scale_factor = 1
 
 # handler
 catch_scene(instance, frame_step)
 # cancel_catch_scene(instance)
+
+
+
