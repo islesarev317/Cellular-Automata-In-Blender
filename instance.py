@@ -6,7 +6,7 @@ class Instance:
     cell_name = "Cell"
     scale_factor = 0.9
 
-    def __init__(self, virtual_function, grain, collection, default_image, reserve=True):
+    def __init__(self, virtual_function, grain, collection, default_image, reserve=True, bake=False):
         self.__tensor = None
         self.virtual_function = virtual_function
         self.grain = grain
@@ -14,11 +14,29 @@ class Instance:
         self.default_image = default_image
         self.all_objects = {}
         self.reserve = reserve
+        self.bake = bake
+        self.baked_frames = []
 
     def __update_obj(self, obj, value):
+        if self.bake:
+            current_frame = blu.current_frame()
+            obj.keyframe_insert("scale", frame=current_frame-1)
+            obj.keyframe_insert("location", frame=current_frame-1)
+
         obj.scale.xyz = 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.default_image)
 
+        if self.bake:
+            current_frame = blu.current_frame()
+            obj.keyframe_insert("scale", frame=current_frame)
+            obj.keyframe_insert("location", frame=current_frame)
+
     def update(self):
+
+        if self.bake:
+            current_frame = blu.current_frame()
+            if current_frame in self.baked_frames:
+                return
+            self.baked_frames.append(current_frame)
 
         curr_tensor = self.virtual_function.compute()
         prev_tensor = self.__tensor
