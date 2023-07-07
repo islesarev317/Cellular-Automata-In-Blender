@@ -6,29 +6,34 @@ class Instance:
     cell_name = "Cell"
     scale_factor = 0.9
 
-    def __init__(self, virtual_function, grain, collection, default_image, reserve=True, bake=False):
+    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False):
         self.__tensor = None
         self.virtual_function = virtual_function
         self.grain = grain
         self.collection = collection
-        self.default_image = default_image
+        self.image = image
         self.all_objects = {}
         self.reserve = reserve
         self.bake = bake
         self.baked_frames = []
 
+    @staticmethod
+    def bake(input_func):
+        def output_func(self, obj, value):
+            if self.bake:
+                current_frame = blu.current_frame()
+                obj.keyframe_insert("scale", frame=current_frame-1)
+                obj.keyframe_insert("location", frame=current_frame-1)
+                input_func(self, obj, value)
+                obj.keyframe_insert("scale", frame=current_frame)
+                obj.keyframe_insert("location", frame=current_frame)
+            else:
+                input_func(self, obj, value)
+        return output_func
+
+    @bake
     def __update_obj(self, obj, value):
-        if self.bake:
-            current_frame = blu.current_frame()
-            obj.keyframe_insert("scale", frame=current_frame-1)
-            obj.keyframe_insert("location", frame=current_frame-1)
-
-        obj.scale.xyz = 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.default_image)
-
-        if self.bake:
-            current_frame = blu.current_frame()
-            obj.keyframe_insert("scale", frame=current_frame)
-            obj.keyframe_insert("location", frame=current_frame)
+        obj.scale.xyz = 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.image)
 
     def update(self):
 
@@ -56,7 +61,7 @@ class Instance:
                     obj = self.all_objects.pop(rp)
                     blu.move_obj(obj, location, scale=0)
                 else:
-                    obj = blu.copy_obj(self.default_image, self.cell_name, self.collection, location, scale=0)
+                    obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
                 self.all_objects[point] = obj
 
         # update
