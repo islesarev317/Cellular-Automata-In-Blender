@@ -1,4 +1,5 @@
 import numpy as np
+from copy import copy
 
 
 class LocatedTensor:
@@ -86,16 +87,17 @@ class LocatedTensor:
     def __base_ops(cls, T1, T2, ops):
         corner = tuple(np.vstack((T1.corner, T2.corner)).min(axis=0))
         dim = tuple(np.vstack((T1.opp_corner, T2.opp_corner)).max(axis=0) - corner + 1)
-        res = cls.zeros(corner, dim=dim)
+        result = cls.zeros(corner, dim=dim)
 
-        for t in [T1, T2]:
-            for point in np.ndindex(t.dim):
-                a = res[res.point_to_local(t.point_to_global(point))]
+        for i, t in [(0, T1), (1, T2)]:
+            for point in t.all_points:
+                rlp = result.point_to_local(t.point_to_global(point))
+                a = result[rlp]
                 b = t[point]
-                c = ops(a, b)
-                res[res.point_to_local(t.point_to_global(point))] = c
+                c = a + b if i == 0 else ops(a, b)
+                result[rlp] = c
 
-        return res
+        return result
 
     @classmethod
     def union(cls, T1, T2):
@@ -105,12 +107,22 @@ class LocatedTensor:
     def diff(cls, T1, T2):
         return cls.__base_ops(T1, T2, lambda a, b: a - b)
 
+    def __add__(self, t):
+        return self.__base_ops(self, t, lambda a, b: a + b)
+
+    def __sub__(self, t):
+        return self.__base_ops(self, t, lambda a, b: 0 if b != 0 else a)
+
+    def __copy__(self):
+        return LocatedTensor(tuple(self.__corner.copy()), self.__value.copy())
+
     def hollow(self):
         """
         [[1 1 1]    [[1 1 1]
          [1 1 1] =>  [1 0 1]
          [1 1 1]]    [1 1 1]]
         """
+        result = copy(self)
         dim = self.dim
         ndim = len(dim)
         for point in np.ndindex(dim):
@@ -124,4 +136,5 @@ class LocatedTensor:
                         if 0 <= n[i] < dim[i]:
                             cnt += 0 if self[n] == 0 else 1
                 if cnt == len(point) * 2:
-                    self[point] = 0
+                    result[point] = 0
+        return result

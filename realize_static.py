@@ -4,7 +4,7 @@ import utils as blu
 class InstanceStatic:
 
     cell_name = "Cell"
-    scale_factor = 0.9
+    scale_factor = 0.99
 
     def __init__(self, tensor, grain, collection, default_image):
         self.__tensor = tensor

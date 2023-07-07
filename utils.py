@@ -1,5 +1,5 @@
 import bpy
-
+import traceback
 
 def print(data):
     for window in bpy.context.window_manager.windows:
@@ -23,7 +23,7 @@ def clear_collection(collection):
 
 
 def normalize_factor(obj):
-    return 1 / max(obj.dimensions)
+    return 1 / max(obj.dimensions[i] / obj.scale.xyz[i] for i in range(3))
 
 
 def copy_obj(image, name, collection, location, scale):
@@ -33,6 +33,26 @@ def copy_obj(image, name, collection, location, scale):
     obj.name = name
     collection.objects.link(obj)
     return obj
+
+
+def catch_scene(virtual_function, instance, frame_step):
+
+    def inner_catch_scene(self, context):
+        try:
+            nonlocal virtual_function
+            nonlocal instance
+            nonlocal frame_step
+            frame = bpy.context.scene.frame_current
+            if frame % frame_step == 0:
+                tensor = virtual_function.compute()
+                instance.update(tensor)
+        except Exception as e:
+            print("ERROR in inner_catch_scene:")
+            print(traceback.format_exc())
+
+    bpy.app.handlers.frame_change_pre.clear()
+    bpy.app.handlers.frame_change_pre.append(inner_catch_scene)
+
 
 
 
