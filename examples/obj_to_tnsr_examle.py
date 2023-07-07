@@ -8,8 +8,7 @@ if not dir in sys.path:
 
 import tensor
 import utils
-import realize_static
-import realize_dynamic
+from old import realize_dynamic, realize_static
 import obj_to_tensor
 
 import imp
@@ -20,10 +19,7 @@ imp.reload(realize_static)
 imp.reload(realize_dynamic)
 imp.reload(obj_to_tensor)
 
-from tensor import LocatedTensor
-from utils import print
-from realize_static import InstanceStatic
-from realize_dynamic import InstanceDynamic
+from old.realize_static import InstanceStatic
 from obj_to_tensor import obj_to_tensor
 
 # =============================================================

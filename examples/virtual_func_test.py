@@ -8,10 +8,9 @@ if not dir in sys.path:
 
 import tensor
 import utils
-import realize_dynamic
+from old import realize_dynamic
 import obj_to_tensor
 import virtual_object
-import virtual_function
 
 import imp
 
@@ -22,12 +21,8 @@ imp.reload(obj_to_tensor)
 imp.reload(virtual_object)
 imp.reload(virtual_function)
 
-from tensor import LocatedTensor
-from utils import print
-from realize_dynamic import InstanceDynamic
-from obj_to_tensor import obj_to_tensor
+from old.realize_dynamic import InstanceDynamic
 from virtual_object import VirtualObject
-from virtual_function import VirtualFunction
 
 # ==================================================
 

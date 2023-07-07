@@ -1,7 +1,27 @@
 import numpy as np
 import mathutils
 from tensor import LocatedTensor
-from virtual_function import VirtualFunction
+
+
+class VirtualFunction:
+
+    def __init__(self, ops, *ff):
+        self.ops = ops
+        self.ff = ff
+
+    def compute(self):
+        tt = [f.compute() for f in self.ff]
+        result = self.ops(*tt)
+        return result
+
+    def __add__(self, other):
+        return VirtualFunction(LocatedTensor.__add__, self, other)
+
+    def __sub__(self, other):
+        return VirtualFunction(LocatedTensor.__sub__, self, other)
+
+    def hollow(self):
+        return VirtualFunction(LocatedTensor.hollow, self)
 
 
 class VirtualObject(VirtualFunction):
@@ -50,4 +70,7 @@ class VirtualObject(VirtualFunction):
                 tensor[point] = self.value
 
         return tensor
+
+
+
 

@@ -35,23 +35,35 @@ def copy_obj(image, name, collection, location, scale):
     return obj
 
 
-def catch_scene(virtual_function, instance, frame_step):
+def move_obj(obj, location, scale):
+    obj.location = location
+    obj.scale.xyz = scale
+
+
+def catch_scene(instance, frame_step):
 
     def inner_catch_scene(self, context):
         try:
-            nonlocal virtual_function
             nonlocal instance
             nonlocal frame_step
             frame = bpy.context.scene.frame_current
             if frame % frame_step == 0:
-                tensor = virtual_function.compute()
-                instance.update(tensor)
+                instance.update()
         except Exception as e:
             print("ERROR in inner_catch_scene:")
             print(traceback.format_exc())
 
     bpy.app.handlers.frame_change_pre.clear()
     bpy.app.handlers.frame_change_pre.append(inner_catch_scene)
+
+
+def cancel_catch_scene(instance):
+    bpy.app.handlers.frame_change_pre.clear()
+    clear_collection(instance.collection)
+
+
+def current_frame():
+    return bpy.context.scene.frame_current
 
 
 

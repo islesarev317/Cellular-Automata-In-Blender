@@ -8,7 +8,7 @@ if not dir in sys.path:
 
 import tensor
 import utils
-import realize_static
+from old import realize_static
 
 import imp
 
@@ -18,7 +18,7 @@ imp.reload(realize_static)
 
 from tensor import LocatedTensor
 from utils import print
-from realize_static import InstanceStatic
+from old.realize_static import InstanceStatic
 
 # =============================================================
 

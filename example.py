@@ -6,7 +6,6 @@ dir = os.path.dirname(bpy.data.filepath)
 if not dir in sys.path:
     sys.path.append(dir)
 
-
 from instance import Instance
 from virtual import VirtualObject
 from utils import catch_scene, clear_collection
@@ -35,7 +34,7 @@ instance = Instance(virtual_function, grain, collection, default_image)
 instance.scale_factor = 1
 
 # handler
-catch_scene(virtual_function, instance, frame_step)
+catch_scene(instance, frame_step)
 #cancel_catch_scene(instance)
 
 

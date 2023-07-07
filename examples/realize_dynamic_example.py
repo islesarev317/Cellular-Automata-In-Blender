@@ -8,7 +8,7 @@ if not dir in sys.path:
 
 import tensor
 import utils
-import realize_dynamic
+from old import realize_dynamic
 
 import imp
 
@@ -18,7 +18,7 @@ imp.reload(realize_dynamic)
 
 from tensor import LocatedTensor
 from utils import print
-from realize_dynamic import InstanceDynamic
+from old.realize_dynamic import InstanceDynamic
 
 # =============================================================
 
