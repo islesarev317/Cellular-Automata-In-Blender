@@ -1,8 +1,5 @@
 # Клеточные автоматы в Blender
 
-![Peek 2023-07-08 00-47](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/5514c59e-beca-4698-ba8d-68c2c0cc990c)
-
-
 ### Описание:
 
 Данный проект представляет собой набор скриптов на языке Python для запуска в [Blender](https://www.blender.org/). Он разработан для реализации трехмерных клеточных автоматов с различными правилами внутри Blender.
@@ -33,8 +30,18 @@
 
 ***
 
+### Галерея
+
 ![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/c2934f8f-6050-4b27-9937-f737b36821f1)
 
+***
+
 ![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/f0e3bcfe-6b2c-4dc9-b80a-210aebfe3e04)
+
+![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/4574906c-e37b-4036-8230-1e1882a70397)
+
+***
+
+![Peek 2023-07-08 00-47](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/5514c59e-beca-4698-ba8d-68c2c0cc990c)
 
 
