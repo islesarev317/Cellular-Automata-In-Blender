@@ -7,7 +7,7 @@ if not dir in sys.path:
     sys.path.append(dir)
 
 from instance import Instance
-from virtual import VirtualObject
+from virtual import VirtualObject, MODE_A, MODE_B
 from utils import catch_scene, clear_collection
 
 # =============================
@@ -22,12 +22,18 @@ default_image = bpy.data.objects["Image"]
 clear_collection(collection)
 
 # objects
-a = VirtualObject(bpy.data.objects["Cube"], grain)
-b = VirtualObject(bpy.data.objects["Ico"], grain)
-c = VirtualObject(bpy.data.objects["Box"], grain)
+cube = VirtualObject(bpy.data.objects["Cube"], grain, value_a=1, value_b=1367)
+ico = VirtualObject(bpy.data.objects["Ico"], grain, value_a=2, value_b=1258)
+box = VirtualObject(bpy.data.objects["Box"], grain, value_a=3, value_b=444)
 
 # virtual
-virtual_function = (a + b).hollow() - c
+virtual_function_a = (cube + ico).hollow() - box
+virtual_function_a.mode = MODE_A
+
+virtual_function_b = cube * ico / box
+virtual_function_b.mode = MODE_B
+
+virtual_life = VirtualLife(values=virtual_function_a, rules=virtual_function_b)
 
 # realize
 instance = Instance(virtual_function, grain, collection, default_image)
