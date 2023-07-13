@@ -48,7 +48,7 @@ class VirtualObject(VirtualFunction):
         self.obj = obj
         self.grain = grain
         self.__values = kwargs
-        self.__mode = "value"
+        self.__mode = next(iter(kwargs.keys()))
         self.tensor = None
 
     @property
