@@ -5,9 +5,9 @@ from tensor import LocatedTensor
 
 class VirtualFunction:
 
-    def __init__(self, ops, *ff):
-        self.ops = ops
-        self.ff = ff
+    def __init__(self, operator, *children):
+        self.operator = operator
+        self.children = children
         self.__mode = None
 
     @property
@@ -20,13 +20,12 @@ class VirtualFunction:
         self.__mode = mode
 
     def compute(self):
-        # tt = [f.compute() for f in self.ff]
-        tt = []
-        for f in self.ff:
+        tensors = []
+        for child in self.children:
             if self.__mode:
-                f.mode = self.mode
-            tt.append(f.compute())
-        result = self.ops(*tt)
+                child.mode = self.mode
+            tensors.append(child.compute())
+        result = self.operator(*tensors)
         return result
 
     def __add__(self, other):
