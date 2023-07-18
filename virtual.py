@@ -16,15 +16,15 @@ class VirtualFunction:
 
     @mode.setter
     def mode(self, mode):
-        assert isinstance(mode, str), "Incorrect value for mode"
         self.__mode = mode
 
     def compute(self):
         tensors = []
         for child in self.children:
-            if self.__mode:
-                child.mode = self.mode
+            temp = child.mode
+            child.mode = self.mode
             tensors.append(child.compute())
+            child.mode = temp
         result = self.operator(*tensors)
         return result
 
@@ -47,12 +47,15 @@ class VirtualObject(VirtualFunction):
         self.obj = obj
         self.grain = grain
         self.__values = kwargs
-        self.__mode = next(iter(kwargs.keys()))
+        self.__mode = None
         self.tensor = None
 
     @property
     def value(self):
-        return self.__values[self.__mode]
+        if self.__mode:
+            return self.__values[self.__mode]
+        else:
+            return next(iter(self.__values.values()))
 
     def compute(self):
         self.tensor = self.__obj_to_tensor()
