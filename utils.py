@@ -1,5 +1,6 @@
 import bpy
 import traceback
+import hashlib
 
 def print(data):
     for window in bpy.context.window_manager.windows:
@@ -64,6 +65,18 @@ def cancel_catch_scene(instance):
 
 def current_frame():
     return bpy.context.scene.frame_current
+
+
+def hash_obj(obj):
+    location = str(obj.location)
+    rotation = str(obj.rotation_euler)
+    scale = str(obj.scale.xyz)
+    hash_object = hashlib.sha256()
+    hash_object.update(location.encode())
+    hash_object.update(rotation.encode())
+    hash_object.update(scale.encode())
+    d = hash_object.hexdigest()
+    return d
 
 
 

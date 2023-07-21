@@ -1,5 +1,7 @@
 import numpy as np
 import mathutils
+import utils as blu
+import hashlib
 from tensor import LocatedTensor
 
 
@@ -8,25 +10,36 @@ class VirtualFunction:
     def __init__(self, operator, *children):
         self.operator = operator
         self.children = children
-        self.__mode = None
+        self.__hash = None
+        self.__tensor = None
 
     @property
-    def mode(self):
-        return self.__mode
+    def hash(self):
+        # считаем как хэш от суммы хэшей дочерних элементов
+        hashes = "|".join([child.hash for child in self.children])  # if isinstance(child, VirtualFunction)
+        hash_object = hashlib.sha256(hashes.encode())
+        return hash_object.hexdigest()
 
-    @mode.setter
-    def mode(self, mode):
-        self.__mode = mode
+    @property
+    def tensor(self):
+        # пересчитываем тензор только если хэш изменился
+        new_hash = self.hash
+        if self.__hash != new_hash:
+            self.__tensor = self.__compute()
+            self.__hash = new_hash
+        return self.__tensor
 
-    def compute(self):
-        tensors = []
-        for child in self.children:
-            temp = child.mode
-            child.mode = self.mode
-            tensors.append(child.compute())
-            child.mode = temp
-        result = self.operator(*tensors)
-        return result
+    def __compute(self):
+        # собираем тензоры дочерних элементов в список и применяем к ним оператор
+        try:
+            tensors = [child.tensor for child in self.children]
+            result_tensor = self.operator(*tensors)
+            return result_tensor
+        except AttributeError as e:
+            blu.print(self.children)
+            blu.print(self.operator)
+            blu.print(e)
+            raise e
 
     def __add__(self, other):
         return VirtualFunction(LocatedTensor.__add__, self, other)
@@ -37,29 +50,53 @@ class VirtualFunction:
     def hollow(self):
         return VirtualFunction(LocatedTensor.hollow, self)
 
+    def life(self):
+        return VirtualLife(self)
+
+    def set(self, value):
+        return VirtualFunction(LocatedTensor.set, self, VirtualConstant(value))
+
+
+# ======================================================================================================================
+
+class VirtualConstant(VirtualFunction):
+
+    def __init__(self, value):
+        super().__init__(1, 1)
+        self.value = value
+
+    @property
+    def hash(self):
+        return str(self.value)
+
+    @property
+    def tensor(self):
+        return self.value
+
+
+# ======================================================================================================================
+
 
 class VirtualObject(VirtualFunction):
 
     distance = 100
+    value = 1
 
-    def __init__(self, obj, grain, **kwargs):
-        super().__init__(None, None)
+    def __init__(self, obj, grain):
+        super().__init__(2, 2)
         self.obj = obj
         self.grain = grain
-        self.__values = kwargs
-        self.__mode = None
-        self.tensor = None
 
     @property
-    def value(self):
-        if self.__mode:
-            return self.__values[self.__mode]
-        else:
-            return next(iter(self.__values.values()))
+    def hash(self):
+        return blu.hash_obj(self.obj)
 
-    def compute(self):
-        self.tensor = self.__obj_to_tensor()
-        return self.tensor
+    @property
+    def tensor(self):
+        return self.__compute()
+
+    def __compute(self):
+        return self.__obj_to_tensor()
 
     def __is_inside(self, p):
         p = self.obj.matrix_world.inverted() @ p
@@ -92,6 +129,77 @@ class VirtualObject(VirtualFunction):
                 tensor[point] = self.value
 
         return tensor
+
+
+# ======================================================================================================================
+
+
+class VirtualLife(VirtualFunction):
+
+    def __init__(self, function_rules):
+        super().__init__(None, None)
+        self.function_rules = function_rules
+        self.__tensor = LocatedTensor.zeros((0, 0, 0), dim=(1, 1, 1))
+        self.seq = 0
+
+    @property
+    def hash(self):
+        self.seq += 1
+        return str(self.seq)  # todo
+
+    @property
+    def tensor(self):
+        self.__tensor = self.__compute()
+        return self.__tensor
+
+    def __compute(self):
+        tensor_rules = self.function_rules.tensor
+        tensor_values = self.__tensor
+        return self.__next_life(tensor_rules, tensor_values)
+
+    def __next_life(self, tensor_rules, tensor_values):
+
+        tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
+
+        for r_point in tensor_rules.all_points:
+            g_point = tensor_rules.point_to_global(r_point)
+            v_point = tensor_values.point_to_local(g_point)
+            n_point = r_point
+            rule = Rule(tensor_rules[r_point])
+            cell = tensor_values.get(v_point, 0)
+            neighbors = tensor_values.num_alive(v_point)
+
+            tensor_next[n_point] = rule.next_cell(cell, neighbors)
+
+        return tensor_next
+
+
+# ======================================================================================================================
+
+
+class Rule:
+
+    def __init__(self, uid):
+        self.uid = uid
+
+    @classmethod
+    def BS_form(cls, born, survive):
+        return cls()
+
+    def next_cell(self, cell, neighbors):
+        num = int(self.uid)
+        binary = f"{num:0b}".rjust(26, "0")
+        list_of_rules = [i for i in binary[::-1]]
+        try:
+            result = list_of_rules[neighbors-1]
+        except IndexError as e:
+            blu.print("list_of_rules: " + str(list_of_rules))
+            blu.print("list_of_rules: " + str(list_of_rules))
+            blu.print("neighbors: " + str(neighbors))
+            raise e
+        return result
+
+
 
 
 

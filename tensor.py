@@ -1,4 +1,5 @@
 import numpy as np
+import utils as blu
 from copy import copy
 
 
@@ -83,6 +84,12 @@ class LocatedTensor:
     def point_to_local(self, point):
         return tuple(point - self.corner)
 
+    def get(self, point, default):
+        try:
+            return self[point]
+        except IndexError:
+            return default
+
     @classmethod
     def __base_ops(cls, T1, T2, ops):
         corner = tuple(np.vstack((T1.corner, T2.corner)).min(axis=0))
@@ -116,6 +123,9 @@ class LocatedTensor:
     def __copy__(self):
         return LocatedTensor(tuple(self.__corner.copy()), self.__value.copy())
 
+    def copy(self):
+        return LocatedTensor(tuple(self.__corner.copy()), self.__value.copy())
+
     def hollow(self):
         """
         [[1 1 1]    [[1 1 1]
@@ -138,3 +148,31 @@ class LocatedTensor:
                 if cnt == len(point) * 2:
                     result[point] = 0
         return result
+
+    def set(self, value):
+        # blu.print("set:::" + str(self))
+        result = copy(self)
+        for point in result.not_null_points:
+            result[point] = value
+        return result
+
+    def num_alive(self, point):
+        def get_neighbors(point, start=True):
+            result = []
+            for i in [0, 1, -1]:
+                if len(point) > 1:
+                    for tail in get_neighbors(point[1:], False):
+                        neighbor = (point[0] + i, *tail)
+                        result.append(neighbor)
+                else:
+                    neighbor = (point[0] + i,)
+                    result.append(neighbor)
+            if start:
+                del result[0]
+            return result
+
+        num = 0
+        for n_point in get_neighbors(point):
+            if self.get(n_point, 0) != 0:
+                num += 1
+        return num
