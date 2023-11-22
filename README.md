@@ -32,6 +32,8 @@
 
 ### Галерея
 
+![Peek 2023-11-22 20-11](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/5d972e9e-1028-43d8-9949-afb526b13bd1)
+
 ![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/c2934f8f-6050-4b27-9937-f737b36821f1)
 
 ![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/f0e3bcfe-6b2c-4dc9-b80a-210aebfe3e04)
