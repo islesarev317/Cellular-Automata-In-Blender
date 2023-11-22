@@ -22,19 +22,22 @@ default_image = bpy.data.objects["Image"]
 clear_collection(collection)
 
 # objects
-a = VirtualObject(bpy.data.objects["Cube"], grain)
-b = VirtualObject(bpy.data.objects["Ico"], grain)
-c = VirtualObject(bpy.data.objects["Box"], grain)
+cube = VirtualObject(bpy.data.objects["Cube"], grain).set(1)
+ico = VirtualObject(bpy.data.objects["Ico"], grain).set(2)
+box = VirtualObject(bpy.data.objects["Box"], grain).set(3)
 
 # virtual
-virtual_function = (a + b).hollow() - c
+vf_a = (cube + ico).hollow() - box
+vf_b = vf_a.set(1368).life()
+vf_c = vf_a * vf_b
 
 # realize
-instance = Instance(virtual_function, grain, collection, default_image)
+instance = Instance(vf_c, grain, collection, default_image)
 instance.scale_factor = 1
+instance.update()
 
 # handler
-catch_scene(instance, frame_step)
+#catch_scene(instance, frame_step)
 #cancel_catch_scene(instance)
 
 

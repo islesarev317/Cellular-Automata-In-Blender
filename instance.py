@@ -44,13 +44,14 @@ class Instance:
                 return
             self.baked_frames.append(current_frame)
 
-        curr_tensor = self.virtual_function.compute()
+        curr_tensor = self.virtual_function.tensor
         prev_tensor = self.__tensor
         self.__tensor = curr_tensor
 
         prev_points = set(prev_tensor.point_to_global(point) for point in prev_tensor.not_null_points) if prev_tensor else set()
         curr_points = set(curr_tensor.point_to_global(point) for point in curr_tensor.not_null_points)
-        reserve_points = set(self.all_objects.keys()) - prev_points - curr_points
+        # reserve_points = set(self.all_objects.keys()) - prev_points - curr_points
+        reserve_points = set(self.all_objects.keys()) - curr_points
 
         # create
         for point in (curr_points - prev_points):
@@ -72,7 +73,7 @@ class Instance:
             self.__update_obj(obj, value)
 
         # delete
-        for point in (prev_points - curr_points):
+        for point in ((prev_points - curr_points) & set(self.all_objects.keys())):
             obj = self.all_objects[point]
             value = 0
             self.__update_obj(obj, value)
