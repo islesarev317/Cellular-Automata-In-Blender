@@ -1,31 +1,198 @@
 import numpy as np
-import utils as blu
 from copy import copy
 
 
 class LocatedTensor:
+    """
+    the class implements a pair of an N dimensional tensor and a vector which contained N element
+    """
+
+    # ----------------- Class creators ----------------- #
 
     def __init__(self, corner, value):
-        assert isinstance(corner, tuple), "Init exception: Arg corner must be a tuple"
-        assert isinstance(value, np.ndarray), "Init exception: Arg value must be an ndarray"
-        assert len(corner) == value.ndim, "Init exception: Len of corner must fit ndim of value"
-        assert len(corner) in [2, 3], "Init exception: Dim must be either 2 or 3"
-
+        """
+        :param corner: (tuple) vector of the lower left corner of the tensor location in N dimensional space
+        :param value: (ndarray) value of the tensor
+        """
+        assert isinstance(corner, tuple), "Init exception: arg corner must be a tuple"
+        assert isinstance(value, np.ndarray), "Init exception: arg value must be an ndarray"
+        assert len(corner) == value.ndim, "Init exception: len of corner must fit ndim of value"
         self.__corner = np.array(corner)
         self.__value = value.copy()
 
     @classmethod
     def zeros(cls, corner, *, dim):
+        """ alternative creator, which fills tensor with zeros values """
         value = np.zeros(dim)
         return cls(corner, value)
 
+    # ----------------- Values ----------------- #
+
     def __getitem__(self, key):
+        """ straight access to tensor (getter) """
         return self.__value[key]
 
     def __setitem__(self, key, value):
+        """ straight access to tensor (setter) """
         self.__value[key] = value
 
+    def get(self, point, default):
+        """ handling for exception if we get values of the tensor which not exist """
+        if sum(n < 0 for n in point) > 0:  # if local point = for example (0, -1)
+            return default
+        try:
+            return self[point]
+        except IndexError:
+            return default
+
+    # ----------------- Points ----------------- #
+
+    @property
+    def all_points(self):
+        """
+        returns list consists of all indexes of tensor
+        to iterate all elements of tensor in loop
+        (local points)
+        """
+        return list(np.ndindex(self.dim))
+
+    @property
+    def not_null_points(self):
+        """ does the same that all_points, but it excludes zero values of tensor """
+        return list(zip(*np.nonzero(self.__value != 0)))
+
+    def point_to_global(self, point):
+        """
+        shifting point (index of the tensor) to the corner vector
+        to get a global location of the point
+        """
+        return tuple(point + self.corner)
+
+    def point_to_local(self, point):
+        """ reverse operation: get a local location of the point from global one """
+        return tuple(point - self.corner)
+
+    # ----------------- Attributes ----------------- #
+
+    @property
+    def dim(self):
+        """ shortcut for the shape """
+        return self.__value.shape
+
+    @property
+    def corner(self):
+        """ shortcut for corner param """
+        return self.__corner
+
+    @property
+    def opp_corner(self):
+        """ vector of the opposite corner of the tensor """
+        return self.corner + self.dim - 1
+
+    # ----------------- Math Operations ----------------- #
+
+    @classmethod
+    def __base_ops(cls, T1, T2, ops):
+        """
+        base internal function that can use for create the binary operations, such as union and subtract.
+        """
+
+        # create blank result tensor
+        corner = tuple(np.vstack((T1.corner, T2.corner)).min(axis=0))
+        dim = tuple(np.vstack((T1.opp_corner, T2.opp_corner)).max(axis=0) - corner + 1)
+        result = cls.zeros(corner, dim=dim)
+
+        # calculating values for result tensor:
+        for point in result.all_points:
+            global_point = result.point_to_global(point)
+            t1_local_point = T1.point_to_local(global_point)
+            t2_local_point = T2.point_to_local(global_point)
+            t1_value = T1.get(t1_local_point, 0)
+            t2_value = T2.get(t2_local_point, 0)
+            result[point] = ops(t1_value, t2_value)
+
+        return result
+
+    def __add__(self, t):
+        """ operation of addition two tensors """
+        return self.__base_ops(self, t, lambda a, b: a + b)
+
+    def __sub__(self, t):
+        """ operation of subtraction two tensors"""
+        return self.__base_ops(self, t, lambda a, b: a - b)
+
+    def fill(self, value):
+        """ set all not null points with given value """
+        result = copy(self)
+        for point in result.not_null_points:
+            result[point] = value
+        return result
+
+    def minimum(self, threshold):
+        """ fill with zero all values which don't satisfy the minimum  """
+        result = copy(self)
+        for point in result.not_null_points:
+            value = result[point]
+            if value < threshold:
+                result[point] = 0
+        return result
+
+    def hollow(self):
+        """
+        [[1 1 1]    [[1 1 1]
+         [1 1 1] =>  [1 0 1]
+         [1 1 1]]    [1 1 1]]
+        """
+        result = copy(self)
+        dim = self.dim
+        ndim = len(dim)
+        for point in np.ndindex(dim):
+            if self[point] != 0:
+                cnt = 0
+                for i in range(ndim):
+                    offset = np.zeros(ndim)
+                    offset[i] = 1
+                    for sign in [1, -1]:
+                        n = tuple(np.int64(np.array(point) + (offset * sign)))
+                        if 0 <= n[i] < dim[i]:
+                            cnt += 0 if self[n] == 0 else 1
+                if cnt == len(point) * 2:
+                    result[point] = 0
+        return result
+
+    def num_alive(self, point):
+        """ count the number of the alive neighbors """
+        def get_neighbors(point, start=True):
+            result = []
+            for i in [0, 1, -1]:
+                if len(point) > 1:
+                    for tail in get_neighbors(point[1:], False):
+                        neighbor = (point[0] + i, *tail)
+                        result.append(neighbor)
+                else:
+                    neighbor = (point[0] + i,)
+                    result.append(neighbor)
+            if start:
+                del result[0]
+            return result
+
+        num = 0
+        for n_point in get_neighbors(point):
+            if self.get(n_point, 0) != 0:
+                num += 1
+        return num
+
+    # ----------------- Others ----------------- #
+
+    def __copy__(self):
+        """ implementation of copy process """
+        return LocatedTensor(tuple(self.__corner.copy()), self.__value.copy())
+
     def __str__(self):
+        """
+        string representation of an object
+        (works only for 2 and 3 dims so far)
+        """
         def prepare_convert(array):
             return np.flip(array.transpose(), axis=tuple(range(array.ndim - 1)))
 
@@ -57,122 +224,3 @@ class LocatedTensor:
             result = str_2d_matrix(result)
 
         return "{" + str(self.corner) + ",\n" + result + "}"
-
-    @property
-    def all_points(self):
-        return np.ndindex(self.dim)
-
-    @property
-    def not_null_points(self):
-        return list(zip(*np.nonzero(self.__value != 0)))
-
-    @property
-    def dim(self):
-        return self.__value.shape
-
-    @property
-    def corner(self):
-        return self.__corner
-
-    @property
-    def opp_corner(self):
-        return self.corner + self.dim - 1
-
-    def point_to_global(self, point):
-        return tuple(point + self.corner)
-
-    def point_to_local(self, point):
-        return tuple(point - self.corner)
-
-    def get(self, point, default):
-        try:
-            return self[point]
-        except IndexError:
-            return default
-
-    @classmethod
-    def __base_ops(cls, T1, T2, ops):
-        corner = tuple(np.vstack((T1.corner, T2.corner)).min(axis=0))
-        dim = tuple(np.vstack((T1.opp_corner, T2.opp_corner)).max(axis=0) - corner + 1)
-        result = cls.zeros(corner, dim=dim)
-
-        for i, t in [(0, T1), (1, T2)]:
-            for point in t.all_points:
-                rlp = result.point_to_local(t.point_to_global(point))
-                a = result[rlp]
-                b = t[point]
-                c = a + b if i == 0 else ops(a, b)
-                result[rlp] = c
-
-        return result
-
-    @classmethod
-    def union(cls, T1, T2):
-        return cls.__base_ops(T1, T2, lambda a, b: a + b)
-
-    @classmethod
-    def diff(cls, T1, T2):
-        return cls.__base_ops(T1, T2, lambda a, b: a - b)
-
-    def __add__(self, t):
-        return self.__base_ops(self, t, lambda a, b: a + b)
-
-    def __sub__(self, t):
-        return self.__base_ops(self, t, lambda a, b: 0 if b != 0 else a)
-
-    def __copy__(self):
-        return LocatedTensor(tuple(self.__corner.copy()), self.__value.copy())
-
-    def copy(self):
-        return LocatedTensor(tuple(self.__corner.copy()), self.__value.copy())
-
-    def hollow(self):
-        """
-        [[1 1 1]    [[1 1 1]
-         [1 1 1] =>  [1 0 1]
-         [1 1 1]]    [1 1 1]]
-        """
-        result = copy(self)
-        dim = self.dim
-        ndim = len(dim)
-        for point in np.ndindex(dim):
-            if self[point] != 0:
-                cnt = 0
-                for i in range(ndim):
-                    offset = np.zeros(ndim)
-                    offset[i] = 1
-                    for sign in [1, -1]:
-                        n = tuple(np.int64(np.array(point) + (offset * sign)))
-                        if 0 <= n[i] < dim[i]:
-                            cnt += 0 if self[n] == 0 else 1
-                if cnt == len(point) * 2:
-                    result[point] = 0
-        return result
-
-    def set(self, value):
-        # blu.print("set:::" + str(self))
-        result = copy(self)
-        for point in result.not_null_points:
-            result[point] = value
-        return result
-
-    def num_alive(self, point):
-        def get_neighbors(point, start=True):
-            result = []
-            for i in [0, 1, -1]:
-                if len(point) > 1:
-                    for tail in get_neighbors(point[1:], False):
-                        neighbor = (point[0] + i, *tail)
-                        result.append(neighbor)
-                else:
-                    neighbor = (point[0] + i,)
-                    result.append(neighbor)
-            if start:
-                del result[0]
-            return result
-
-        num = 0
-        for n_point in get_neighbors(point):
-            if self.get(n_point, 0) != 0:
-                num += 1
-        return num
