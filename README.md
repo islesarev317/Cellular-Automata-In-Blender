@@ -1,4 +1,4 @@
-![tensor](https://github.com/islesarev317/NumPy-Education/assets/78931652/2f52b9d0-a1ad-4f4f-953d-f30431464b37)# Клеточные автоматы в Blender
+# Клеточные автоматы в Blender
 
 ### Описание:
 
