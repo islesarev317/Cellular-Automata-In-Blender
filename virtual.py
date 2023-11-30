@@ -2,6 +2,7 @@ import numpy as np
 import mathutils
 import utils as blu
 import hashlib
+from copy import copy
 from tensor import LocatedTensor
 
 
@@ -26,17 +27,15 @@ class VirtualFunction:
 
     # ----------------- Computation of Tensor ----------------- #
 
-    @property
     def hash(self):
         """ determine hash based on child objects """
-        hashes = "|".join([child.hash for child in self.children])
+        hashes = "|".join([child.hash() for child in self.children])
         hash_object = hashlib.sha256(hashes.encode())
         return hash_object.hexdigest()
 
-    @property
     def tensor(self):
         """ wrap: cause compute tensor if hash changed else use saved tensor """
-        new_hash = self.hash
+        new_hash = self.hash()
         if self.__hash != new_hash:
             self.__tensor = self.__compute()
             self.__hash = new_hash
@@ -45,7 +44,7 @@ class VirtualFunction:
     def __compute(self):
         """ compute total tensor as result of applying operator to child tensor """
         try:
-            tensors = [child.tensor for child in self.children]
+            tensors = [child.tensor() for child in self.children]
             result_tensor = self.operator(*tensors)
             return result_tensor
         except AttributeError as e:
@@ -117,34 +116,21 @@ class VirtualObject(VirtualFunction):
         self.obj = obj
         self.grain = grain
 
-    @property
     def hash(self):
         """ count hash of the 3d object as summary of location, rotation and size of the object"""
         return blu.hash_obj(self.obj)
 
-    @property
     def tensor(self):
-        """ just a wrap """
-        return self.__compute()
+        """ wrap: cause compute tensor if hash changed else use saved tensor """
+        new_hash = self.hash()
+        if self.__hash != new_hash:
+            self.__tensor = self.__compute()
+            self.__hash = new_hash
+        return self.__tensor
 
     def __compute(self):
-        """ also a wrap """
+        """ just a wrap """
         return self.__obj_to_tensor()
-
-    def __is_inside(self, p):
-        """ check if point is inside the 3d object """
-        p = self.obj.matrix_world.inverted() @ p
-        result, point, normal, face = self.obj.closest_point_on_mesh(p, distance=self.distance)
-        p2 = point - p
-        v = p2.dot(normal)
-        return not (v < 0.0)
-
-    def __get_real_bound_box(self):
-        """ get a bound box after applying all 3d transformations """
-        bb_vertices = [mathutils.Vector(v) for v in self.obj.bound_box]
-        mat = self.obj.matrix_world
-        world_bb_vertices = np.array([mat @ v for v in bb_vertices])
-        return world_bb_vertices
 
     def __obj_to_tensor(self):
         """ transform object to tensor """
@@ -166,6 +152,21 @@ class VirtualObject(VirtualFunction):
 
         return tensor
 
+    def __is_inside(self, p):
+        """ check if point is inside the 3d object """
+        p = self.obj.matrix_world.inverted() @ p
+        result, point, normal, face = self.obj.closest_point_on_mesh(p, distance=self.distance)
+        p2 = point - p
+        v = p2.dot(normal)
+        return not (v < 0.0)
+
+    def __get_real_bound_box(self):
+        """ get a bound box after applying all 3d transformations """
+        bb_vertices = [mathutils.Vector(v) for v in self.obj.bound_box]
+        mat = self.obj.matrix_world
+        world_bb_vertices = np.array([mat @ v for v in bb_vertices])
+        return world_bb_vertices
+
 
 # ==================================== #
 # ========= 4. VirtualLife =========== #
@@ -177,71 +178,55 @@ class VirtualLife(VirtualFunction):
     Implementation of John Conway's Game of Life
     """
 
-    def __init__(self, function_rules):
+    def __init__(self, virtual_function):
         """ param function rules is virtual function which return tensor with rules in each cell of the tensor """
-        super().__init__(None, None)  # it's a leaf, we don't have any children here
-        self.function_rules = function_rules
-        self.__tensor = LocatedTensor.zeros((0, 0, 0), dim=(1, 1, 1))
+        super().__init__(None, None)  # we use self.virtual_function for the only children
+        self.virtual_function = virtual_function
+        self.__tensor_rules = None
+        self.__tensor_values = None
         self.seq = 0
 
-    @property
     def hash(self):
+        """ send different hash each time because we need to recalculate tensor each time """
         self.seq += 1
-        return str(self.seq)  # todo
+        return str(self.seq)
 
-    @property
     def tensor(self):
-        self.__tensor = self.__compute()
-        return self.__tensor
+        """ just a wrap """
+        return self.__compute()
 
     def __compute(self):
-        tensor_rules = self.function_rules.tensor
-        tensor_values = self.__tensor
-        return self.__next_life(tensor_rules, tensor_values)
+        """ compute rules, next life and keep results """
+        self.__tensor_rules = self.virtual_function.tensor()
+        self.__tensor_values = self.__next_life( self.__tensor_rules, self.__tensor_values)
+        return self.__tensor_values
 
     def __next_life(self, tensor_rules, tensor_values):
+        """  apply cellular automata rules to tensor and return next tensor state """
+
+        def apply_rule(rule, value, neighbor_count):
+            """ apply cellular automata rule to one cell and return next cell state """
+            cell_rule_binary = f"{int(rule):0b}".rjust(26, "0")
+            list_of_rules = [i for i in cell_rule_binary[::-1]]
+            try:
+                result = list_of_rules[neighbor_count - 1]
+            except IndexError as e:
+                blu.print("list_of_rules: " + str(list_of_rules))
+                blu.print("neighbors: " + str(neighbor_count))
+                raise e
+            return result
 
         tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
 
-        for r_point in tensor_rules.all_points:
-            g_point = tensor_rules.point_to_global(r_point)
-            v_point = tensor_values.point_to_local(g_point)
-            rule = Rule(tensor_rules[r_point])
-            cell = tensor_values.get(v_point, 0)
-            neighbors = tensor_values.num_alive(v_point)  # change to global!
-
-            tensor_next[r_point] = rule.next_cell(cell, neighbors)
+        for global_point in tensor_rules.all_points_global:
+            cell_rule = tensor_rules.get_global(global_point)
+            if self.seq == 0:  # we don't have values at first step
+                cell_value = 0
+                neighbors = 0
+            else:
+                cell_value = tensor_values.get_global(global_point, 0)
+                neighbors = tensor_values.num_alive(global_point)
+            next_cell_value = apply_rule(cell_rule, cell_value, neighbors)
+            tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next
-
-
-# ======================================================================================================================
-
-
-class Rule:
-
-    def __init__(self, uid):
-        self.uid = uid
-
-    @classmethod
-    def BS_form(cls, born, survive):
-        return cls()
-
-    def next_cell(self, cell, neighbors):
-        num = int(self.uid)
-        binary = f"{num:0b}".rjust(26, "0")
-        list_of_rules = [i for i in binary[::-1]]
-        try:
-            result = list_of_rules[neighbors-1]
-        except IndexError as e:
-            blu.print("list_of_rules: " + str(list_of_rules))
-            blu.print("list_of_rules: " + str(list_of_rules))
-            blu.print("neighbors: " + str(neighbors))
-            raise e
-        return result
-
-
-
-
-
-
