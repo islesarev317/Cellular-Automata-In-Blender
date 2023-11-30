@@ -208,7 +208,7 @@ class VirtualLife(VirtualFunction):
             v_point = tensor_values.point_to_local(g_point)
             rule = Rule(tensor_rules[r_point])
             cell = tensor_values.get(v_point, 0)
-            neighbors = tensor_values.num_alive(v_point)
+            neighbors = tensor_values.num_alive(v_point)  # change to global!
 
             tensor_next[r_point] = rule.next_cell(cell, neighbors)
 
