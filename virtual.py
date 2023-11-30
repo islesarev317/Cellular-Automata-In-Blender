@@ -2,7 +2,6 @@ import numpy as np
 import mathutils
 import utils as blu
 import hashlib
-from copy import copy
 from tensor import LocatedTensor
 
 
@@ -109,7 +108,7 @@ class VirtualObject(VirtualFunction):
     """
 
     distance = 100  # distance for checking point location attitude the object
-    value = 1  # default value for tensor filling
+    value = 1  # default value to fill tensor
 
     def __init__(self, obj, grain):
         super().__init__(None, None)  # it's a leaf, we don't have any children here
@@ -198,23 +197,11 @@ class VirtualLife(VirtualFunction):
     def __compute(self):
         """ compute rules, next life and keep results """
         self.__tensor_rules = self.virtual_function.tensor()
-        self.__tensor_values = self.__next_life( self.__tensor_rules, self.__tensor_values)
+        self.__tensor_values = self.__next_life(self.__tensor_rules, self.__tensor_values)
         return self.__tensor_values
 
     def __next_life(self, tensor_rules, tensor_values):
         """  apply cellular automata rules to tensor and return next tensor state """
-
-        def apply_rule(rule, value, neighbor_count):
-            """ apply cellular automata rule to one cell and return next cell state """
-            cell_rule_binary = f"{int(rule):0b}".rjust(26, "0")
-            list_of_rules = [i for i in cell_rule_binary[::-1]]
-            try:
-                result = list_of_rules[neighbor_count - 1]
-            except IndexError as e:
-                blu.print("list_of_rules: " + str(list_of_rules))
-                blu.print("neighbors: " + str(neighbor_count))
-                raise e
-            return result
 
         tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
 
@@ -226,7 +213,20 @@ class VirtualLife(VirtualFunction):
             else:
                 cell_value = tensor_values.get_global(global_point, 0)
                 neighbors = tensor_values.num_alive(global_point)
-            next_cell_value = apply_rule(cell_rule, cell_value, neighbors)
+            next_cell_value = self.apply_rule(cell_rule, cell_value, neighbors)
             tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next
+
+    def apply_rule(self, rule, value, neighbor_count):
+        """ apply cellular automata rule to one cell and return next cell state """
+        max_neighbors = 3 ** self.__tensor_rules.ndim - 1  # = (8) for 2d or (26) for 3d
+        cell_rule_binary = f"{int(rule):0b}".rjust(max_neighbors, "0")
+        list_of_rules = [i for i in cell_rule_binary[::-1]]
+        try:
+            result = list_of_rules[neighbor_count - 1]  # -1?
+        except IndexError as e:
+            blu.print("list_of_rules: " + str(list_of_rules))
+            blu.print("neighbors: " + str(neighbor_count))
+            raise e
+        return result
