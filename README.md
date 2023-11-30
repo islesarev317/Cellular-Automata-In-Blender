@@ -42,6 +42,7 @@
 
 ### Схемы
 
-![tensor](https://github.com/islesarev317/NumPy-Education/assets/78931652/9c40b58e-73d1-47dc-8bd9-fd0898458f4f)
+![tensor](https://github.com/islesarev317/NumPy-Education/assets/78931652/3cea503d-1768-47da-ab2b-f8100b54b443)
+
 
 
