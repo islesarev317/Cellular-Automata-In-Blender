@@ -5,6 +5,8 @@ except ImportError:
     pass  # utils module works only inside blender, so we skip it for the test purposes
 import hashlib
 from tensor import LocatedTensor
+from copy import copy
+from rule import CellRule
 
 
 # ==================================== #
@@ -184,10 +186,14 @@ class VirtualLife(VirtualFunction):
     Implementation of John Conway's Game of Life
     """
 
-    def __init__(self, virtual_function):
-        """ param function rules is virtual function which return tensor with rules in each cell of the tensor """
+    def __init__(self, rules_function, initial_function=None):
+        """
+        param virtual_function is virtual function which return tensor with rules in each cell of the tensor
+        param initial_function is virtual function which return tensor for initialization __tensor_values
+        """
         super().__init__(None, None)  # we use self.virtual_function for the only children
-        self.virtual_function = virtual_function
+        self.rules_function = rules_function
+        self.initial_function = initial_function
         self.__tensor_rules = None
         self.__tensor_values = None
         self.seq = 0
@@ -202,38 +208,26 @@ class VirtualLife(VirtualFunction):
         return self.__compute()
 
     def __compute(self):
-        """ compute rules, next life and keep results """
-        self.__tensor_rules = self.virtual_function.tensor()
+        """ compute rules, initial values, next life and keep results """
+        self.__tensor_rules = self.rules_function.tensor()
+        if self.seq == 0:
+            if self.initial_function:
+                self.__tensor_values = self.initial_function.tensor()  # set initial values
+            else:
+                self.__tensor_values = copy(self.__tensor_rules).fill(0)  # we can have no values at first step
         self.__tensor_values = self.__next_life(self.__tensor_rules, self.__tensor_values)
         return self.__tensor_values
 
-    def __next_life(self, tensor_rules, tensor_values):
+    @classmethod
+    def __next_life(cls, tensor_rules, tensor_values):
         """  apply cellular automata rules to tensor and return next tensor state """
-
         tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
 
         for global_point in tensor_rules.all_points_global:
             cell_rule = tensor_rules.get_global(global_point)
-            if self.seq == 0:  # we don't have values at first step
-                cell_value = 0
-                neighbors = 0
-            else:
-                cell_value = tensor_values.get_global(global_point, 0)
-                neighbors = tensor_values.num_alive(global_point)
-            next_cell_value = self.apply_rule(cell_rule, cell_value, neighbors)
+            cell_value = tensor_values.get_global(global_point, 0)
+            neighbors = tensor_values.num_alive(global_point)
+            next_cell_value = CellRule.apply_rule_by_code(tensor_rules.ndim, cell_rule, cell_value, neighbors)
             tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next
-
-    def apply_rule(self, rule, value, neighbor_count):
-        """ apply cellular automata rule to one cell and return next cell state """
-        max_neighbors = 3 ** self.__tensor_rules.ndim - 1  # = (8) for 2d or (26) for 3d
-        cell_rule_binary = f"{int(rule):0b}".rjust(max_neighbors, "0")
-        list_of_rules = [i for i in cell_rule_binary[::-1]]
-        try:
-            result = list_of_rules[neighbor_count - 1]  # -1?
-        except IndexError as e:
-            blu.print("list_of_rules: " + str(list_of_rules))
-            blu.print("neighbors: " + str(neighbor_count))
-            raise e
-        return result

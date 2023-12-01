@@ -1,0 +1,79 @@
+class CellRule:
+    """
+    Class for calculate cellular automata rules and apply them
+    """
+
+    @classmethod
+    def get_code(cls, ndim, birth_cond, survive_cond=None):
+
+        # ndim = 2 --> 2-dimensional space
+        # birth_cond = [3] --> a dead cell turn to life if only has 3 neighbors
+        # survive_cond = [2, 3] --> a living cell stays alife if only has 2 or 3 neighbors
+
+        if survive_cond is None:
+            survive_cond = birth_cond.copy()
+
+        area_size = 3 ** ndim  # 9 for 2d
+
+        # 1) create rules for dead cell and for living cell
+
+        rule_for_0 = [0 for _ in range(area_size)]
+        rule_for_1 = [0 for _ in range(area_size)]
+        for neighbors_cnt in birth_cond:
+            rule_for_0[neighbors_cnt] = 1  # --> [0, 0, 1, 1, 0, 0, 0, 0, 0]
+        for neighbors_cnt in survive_cond:
+            rule_for_1[neighbors_cnt] = 1  # --> [0, 0, 0, 1, 0, 0, 0, 0, 0]
+
+        # 2) union two parts of rules
+
+        sum_rule_list = []
+        for i in range(area_size):
+            sum_rule_list.append(rule_for_0[i])
+            sum_rule_list.append(rule_for_1[i])
+        # --> [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        # 3) convert to integer and return
+
+        sum_rule_str = "".join([str(num) for num in sum_rule_list[::-1]]).lstrip("0")  # --> 11100000
+        code = int(sum_rule_str, 2)  # --> 224
+        return code
+
+    @classmethod
+    def get_condition(cls, ndim, code):
+
+        # code = 224
+
+        area_size = 3 ** ndim
+
+        # 1) convert to binary
+
+        sum_rule_str = f"{int(code):0b}"  # --> 11100000
+        sum_rule_list = [int(num) for num in sum_rule_str[::-1].ljust(area_size * 2, "0")]
+        # --> [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        # 2) split into 2 part
+
+        rule_for_0 = sum_rule_list[0::2]
+        rule_for_1 = sum_rule_list[1::2]
+
+        # 3) compute birth and survive conditions and return
+
+        birth_cond = [i for i in range(area_size) if rule_for_0[i] == 1]  # --> [3]
+        survive_cond = [i for i in range(area_size) if rule_for_1[i] == 1]  # --> [2, 3]
+        return birth_cond, survive_cond
+
+    @classmethod
+    def apply_rule_by_conditions(cls, birth_cond, survive_cond, value, neighbors):
+        if value == 0:
+            return int(neighbors in birth_cond)
+        else:
+            return int(neighbors in survive_cond) * value  # should it be multiplication?
+
+    @classmethod
+    def apply_rule_by_code(cls, ndim, code, value, neighbors):
+        c1, c2 = cls.get_condition(ndim, code)
+        return cls.apply_rule_by_conditions(c1, c2, value, neighbors)
+
+    @classmethod
+    def get_max_code(cls, ndim):
+        return 2 ** (3 ** ndim * 2) - 1
