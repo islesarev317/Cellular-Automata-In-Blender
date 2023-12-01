@@ -200,7 +200,6 @@ class VirtualLife(VirtualFunction):
 
     def hash(self):
         """ send different hash each time because we need to recalculate tensor each time """
-        self.seq += 1
         return str(self.seq)
 
     def tensor(self):
@@ -210,17 +209,23 @@ class VirtualLife(VirtualFunction):
     def __compute(self):
         """ compute rules, initial values, next life and keep results """
         self.__tensor_rules = self.rules_function.tensor()
-        if self.seq == 0:
+        self.seq += 1
+        if self.seq == 1:
             if self.initial_function:
                 self.__tensor_values = self.initial_function.tensor()  # set initial values
+                return self.__tensor_values
             else:
-                self.__tensor_values = copy(self.__tensor_rules).fill(0)  # we can have no values at first step
+                self.__tensor_values = copy(self.__tensor_rules)  # we can have no values at first step
+                self.__tensor_values[:] = 0  # or .fill(0) ?
         self.__tensor_values = self.__next_life(self.__tensor_rules, self.__tensor_values)
         return self.__tensor_values
 
     @classmethod
     def __next_life(cls, tensor_rules, tensor_values):
-        """  apply cellular automata rules to tensor and return next tensor state """
+        """
+        apply cellular automata rules to tensor and return next tensor state
+        todo: move to tensor.py
+        """
         tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
 
         for global_point in tensor_rules.all_points_global:
