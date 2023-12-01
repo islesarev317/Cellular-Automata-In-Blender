@@ -44,7 +44,6 @@ class LocatedTensor:
         access to tensor's value (getter) BY GLOBAL POINT
         return default if point is out of range (handling not exists exception)
         """
-
         local_point = self.point_to_local(point)
         point_is_within = ((np.zeros(self.ndim) <= local_point) & (local_point < np.array(self.dim))).all()
 
@@ -58,7 +57,6 @@ class LocatedTensor:
         access to tensor's value (getter) BY GLOBAL POINT
         return ERROR if point is out of range (no handling not exists exception)
         """
-
         local_point = self.point_to_local(point)
         self[local_point] = value
 
@@ -137,13 +135,32 @@ class LocatedTensor:
 
         return result
 
-    def __add__(self, t):
-        """ operation of addition two tensors """
-        return self.__base_ops(self, t, lambda a, b: a + b)
+    @classmethod
+    def __base_ops_broadcast(cls, t1, t2, ops):
+        """
+        for operations like tensor + number we need to convert number to tensor,
+        BUT operations like number + (tensor or number + number) work only with VirtualFuntion from virtual.py
+        """
+        if isinstance(t1, cls) and isinstance(t2, cls):  # both are LocatedTensor
+            return cls.__base_ops(t1, t2, ops)
+        if isinstance(t1, (int, float)) and isinstance(t2, cls):  # the left is a number
+            t_broadcasted = copy(t2)
+            t_broadcasted[:] = t1
+            return cls.__base_ops(t_broadcasted, t2, ops)
+        if isinstance(t1, cls) and isinstance(t2, (int, float)):  # the right is a number
+            t_broadcasted = copy(t1)
+            t_broadcasted[:] = t2
+            return cls.__base_ops(t1, t_broadcasted, ops)
+        if isinstance(t1, (int, float)) and isinstance(t2, (int, float)):  # both are numbers
+            return ops(t1, t2)
 
-    def __sub__(self, t):
+    def __add__(self, other):
+        """ operation of addition two tensors """
+        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: a + b)
+
+    def __sub__(self, other):
         """ operation of subtraction two tensors"""
-        return self.__base_ops(self, t, lambda a, b: a - b)
+        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: a - b)
 
     def fill(self, value):
         """ set all not null points with given value """

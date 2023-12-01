@@ -1,6 +1,8 @@
 import numpy as np
-import mathutils
-import utils as blu
+try:
+    import utils as blu
+except ImportError:
+    pass  # utils module works only inside blender, so we skip it for the test purposes
 import hashlib
 from tensor import LocatedTensor
 
@@ -47,9 +49,15 @@ class VirtualFunction:
             result_tensor = self.operator(*tensors)
             return result_tensor
         except AttributeError as e:
-            blu.print(self.children)
-            blu.print(self.operator)
-            blu.print(e)
+            print(self.children)
+            print(self.operator)
+            print(e)
+            try:
+                blu.print(self.children)
+                blu.print(self.operator)
+                blu.print(e)
+            except NameError:
+                pass  # for manual test, because we have blu module only inside blender
             raise e
 
     # ----------------- Creators on each tensor operator ----------------- #
@@ -85,15 +93,14 @@ class VirtualConstant(VirtualFunction):
 
     def __init__(self, value):
         super().__init__(None, None)  # it's a leaf, we don't have any children here
-        self.value = value
+        self.__value = value  # it can be single int value or ndarray tensor, so we don't use __tensor
 
-    @property
     def hash(self):
-        return str(self.value)
+        hash_object = hashlib.sha256(str(self.__value).encode())
+        return hash_object.hexdigest()
 
-    @property
     def tensor(self):
-        return self.value
+        return self.__value
 
 
 # ==================================== #
@@ -145,7 +152,7 @@ class VirtualObject(VirtualFunction):
         tensor = LocatedTensor.zeros(corner, dim=dim)
 
         for point in np.ndindex(tensor.dim):
-            loc = mathutils.Vector(tuple(x * self.grain for x in tensor.point_to_global(point)))
+            loc = blu.vector(tuple(x * self.grain for x in tensor.point_to_global(point)))
             if self.__is_inside(loc):
                 tensor[point] = self.value
 
@@ -161,7 +168,7 @@ class VirtualObject(VirtualFunction):
 
     def __get_real_bound_box(self):
         """ get a bound box after applying all 3d transformations """
-        bb_vertices = [mathutils.Vector(v) for v in self.obj.bound_box]
+        bb_vertices = [blu.vector(v) for v in self.obj.bound_box]
         mat = self.obj.matrix_world
         world_bb_vertices = np.array([mat @ v for v in bb_vertices])
         return world_bb_vertices

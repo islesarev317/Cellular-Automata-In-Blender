@@ -1,6 +1,8 @@
 import bpy
+import mathutils
 import traceback
 import hashlib
+
 
 def print(data):
     for window in bpy.context.window_manager.windows:
@@ -25,6 +27,10 @@ def clear_collection(collection):
 
 def normalize_factor(obj):
     return 1 / max(obj.dimensions[i] / obj.scale.xyz[i] for i in range(3))
+
+
+def vector(v):
+    return mathutils.Vector(v)
 
 
 def copy_obj(image, name, collection, location, scale):
