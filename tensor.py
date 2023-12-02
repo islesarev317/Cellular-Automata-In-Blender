@@ -1,5 +1,6 @@
 import numpy as np
 from copy import copy
+from rule import CellRule
 
 
 class LocatedTensor:
@@ -222,6 +223,28 @@ class LocatedTensor:
             if self.get_global(neighbor_point, 0) != 0:  # we use 0 as default for getting out of range
                 num += 1
         return num
+
+    def next_life(self, rules):
+        """ apply cellular automata rules to tensor and return next tensor state """
+
+        if isinstance(rules, int):
+            tensor_rules = copy(self)
+            tensor_rules[:] = rules
+        elif isinstance(rules, LocatedTensor):
+            tensor_rules = rules
+        else:
+            raise TypeError("Parameter rules must be int or tensor")
+
+        tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
+
+        for global_point in tensor_rules.all_points_global:
+            cell_rule = tensor_rules.get_global(global_point)
+            cell_value = self.get_global(global_point, 0)
+            neighbors = self.num_alive(global_point)
+            next_cell_value = CellRule.apply_rule_by_code(tensor_rules.ndim, cell_rule, cell_value, neighbors)
+            tensor_next.set_global(global_point, next_cell_value)
+
+        return tensor_next
 
     # ----------------- Others ----------------- #
 

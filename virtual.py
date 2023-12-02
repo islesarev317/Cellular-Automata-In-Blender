@@ -217,22 +217,5 @@ class VirtualLife(VirtualFunction):
             else:
                 self.__tensor_values = copy(self.__tensor_rules)  # we can have no values at first step
                 self.__tensor_values[:] = 0  # or .fill(0) ?
-        self.__tensor_values = self.__next_life(self.__tensor_rules, self.__tensor_values)
+        self.__tensor_values = self.__tensor_values.next_life(self.__tensor_rules)
         return self.__tensor_values
-
-    @classmethod
-    def __next_life(cls, tensor_rules, tensor_values):
-        """
-        apply cellular automata rules to tensor and return next tensor state
-        todo: move to tensor.py
-        """
-        tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
-
-        for global_point in tensor_rules.all_points_global:
-            cell_rule = tensor_rules.get_global(global_point)
-            cell_value = tensor_values.get_global(global_point, 0)
-            neighbors = tensor_values.num_alive(global_point)
-            next_cell_value = CellRule.apply_rule_by_code(tensor_rules.ndim, cell_rule, cell_value, neighbors)
-            tensor_next.set_global(global_point, next_cell_value)
-
-        return tensor_next
