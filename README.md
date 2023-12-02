@@ -14,8 +14,9 @@
 
 ### Функционал проекта:
 
-- [virtual.py](virtual.py) - модуль для преобразования объектов в трехмерные матрицы с возможностью задавать формулу сочетания матриц и пересчитывать результат при изменении первичных объектов.
-- [tensor.py](tensor.py) - модуль для работы с трехмерными матрицами на основе `numpy`. [(Схема)](https://github.com/islesarev317/NumPy-Education/assets/78931652/c868ede2-6ed8-4abf-89bb-59a79e3e7d0e)
+- [tensor.py](tensor.py) - модуль для работы с трехмерными матрицами на основе `numpy`. [(Схема)](https://github.com/islesarev317/NumPy-Education/assets/78931652/b63a2a5c-01b2-4d98-90f2-40549df5325e)
+- [virtual.py](virtual.py) - модуль для преобразования объектов в трехмерные матрицы с возможностью задавать формулу сочетания матриц и пересчитывать результат при изменении первичных объектов. [(Схема)](https://github.com/islesarev317/NumPy-Education/assets/78931652/29157797-a1e6-4f24-8c79-62d8ac8fa0c1)
+- [rule.py](rule.py) - модуль для расчета правил клеточных автоматов и их применения
 - [instance.py](instance.py) - модуль для реализация трехмерных матриц, при которой каждому ненулевому значению матрицы сопоставляется объект. Также предусмотрено переиспользование объектов в целях оптимизации при создании анимации.
 - [utils.py](utils.py) - набор различных функций, инкапсулирующих логику работы с модулем `bpy`.
 
@@ -44,5 +45,8 @@
 
 ### 1) tensor.py
 
-![tensor](https://github.com/islesarev317/NumPy-Education/assets/78931652/c868ede2-6ed8-4abf-89bb-59a79e3e7d0e)
+![tensor](https://github.com/islesarev317/NumPy-Education/assets/78931652/b63a2a5c-01b2-4d98-90f2-40549df5325e)
 
+### 2) virtual.py
+
+![rule](https://github.com/islesarev317/NumPy-Education/assets/78931652/29157797-a1e6-4f24-8c79-62d8ac8fa0c1)
