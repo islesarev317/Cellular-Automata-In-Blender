@@ -34,21 +34,21 @@ class CellRule:
 
         # 3) convert to integer and return
 
-        sum_rule_str = "".join([str(num) for num in sum_rule_list[::-1]]).lstrip("0")  # --> 11100000
-        code = int(sum_rule_str, 2)  # --> 224
+        sum_rule_str = "".join([str(num) for num in sum_rule_list]).lstrip("0")  # --> 1110000000000
+        code = int(sum_rule_str, 2)  # --> 7168
         return code
 
     @classmethod
     def get_condition(cls, ndim, code):
 
-        # code = 224
+        # code = 7168
 
         area_size = 3 ** ndim
 
         # 1) convert to binary
 
-        sum_rule_str = f"{int(code):0b}"  # --> 11100000
-        sum_rule_list = [int(num) for num in sum_rule_str[::-1].ljust(area_size * 2, "0")]
+        sum_rule_str = f"{int(code):0b}"  # --> 1110000000000
+        sum_rule_list = [int(num) for num in sum_rule_str.rjust(area_size * 2, "0")]
         # --> [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         # 2) split into 2 part
