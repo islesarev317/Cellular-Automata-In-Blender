@@ -19,6 +19,14 @@ class Instance:
         self.bake_interval = bake_interval
         self.limit = limit
         self.__baked_frames = []
+        self.__reuse_objects()
+
+    def __reuse_objects(self):
+        i = 0
+        for obj in self.collection.objects:
+            obj.scale.xyz = 0
+            self.all_objects[i] = obj
+            i += 1
 
     @staticmethod
     def bake(input_func):
