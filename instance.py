@@ -60,32 +60,30 @@ class Instance:
 
         prev_points = set(prev_tensor.not_null_points_global) if prev_tensor else set()
         curr_points = set(curr_tensor.not_null_points_global)
-        reserve_points = set(self.all_objects.keys()) - curr_points
+        existed_points = set(self.all_objects.keys())
+        reserve_points = existed_points - curr_points
 
         # create
-        for point in (curr_points - prev_points):
-            if point not in self.all_objects:
-                location = tuple(x * self.grain for x in point)
-                # optimization
-                if len(reserve_points) > 0 and self.reserve:
-                    rp = reserve_points.pop()
-                    obj = self.all_objects.pop(rp)
-                    blu.move_obj(obj, location, scale=0)
-                elif len(self.all_objects) < self.limit:
-                    obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
-                else:
-                    obj = None
-                self.all_objects[point] = obj
+        for point in (curr_points - existed_points):
+            location = tuple(x * self.grain for x in point)
+            if len(reserve_points) > 0 and self.reserve:  # optimization
+                rp = reserve_points.pop()  # extract reserve point
+                obj = self.all_objects.pop(rp)  # extract reserve object
+                blu.move_obj(obj, location, scale=0)  # move reserve object
+            elif len(self.all_objects) < self.limit:
+                obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
+            else:
+                obj = None
+            self.all_objects[point] = obj
 
         # update
         for point in curr_points:
             obj = self.all_objects[point]
-            value = curr_tensor[curr_tensor.point_to_local(point)]
+            value = curr_tensor.get_global(point)
             self.__update_obj(obj, value)
 
         # delete
-        for point in ((prev_points - curr_points) & set(self.all_objects.keys())):
+        for point in (prev_points & reserve_points):  # reserve_points after moving some point in create area
             obj = self.all_objects[point]
             value = 0
             self.__update_obj(obj, value)
-
