@@ -20,9 +20,9 @@ class CellRule:
         rule_for_0 = [0 for _ in range(area_size)]
         rule_for_1 = [0 for _ in range(area_size)]
         for neighbors_cnt in birth_cond:
-            rule_for_0[neighbors_cnt] = 1  # --> [0, 0, 1, 1, 0, 0, 0, 0, 0]
+            rule_for_0[neighbors_cnt] = 1  # --> [0, 0, 0, 1, 0, 0, 0, 0, 0]
         for neighbors_cnt in survive_cond:
-            rule_for_1[neighbors_cnt] = 1  # --> [0, 0, 0, 1, 0, 0, 0, 0, 0]
+            rule_for_1[neighbors_cnt] = 1  # --> [0, 0, 1, 1, 0, 0, 0, 0, 0]
 
         # 2) union two parts of rules
 
@@ -53,8 +53,8 @@ class CellRule:
 
         # 2) split into 2 part
 
-        rule_for_0 = sum_rule_list[0::2]
-        rule_for_1 = sum_rule_list[1::2]
+        rule_for_0 = sum_rule_list[0::2]  # --> [0, 0, 0, 1, 0, 0, 0, 0, 0]
+        rule_for_1 = sum_rule_list[1::2]  # --> [0, 0, 1, 1, 0, 0, 0, 0, 0]
 
         # 3) compute birth and survive conditions and return
 
@@ -63,16 +63,22 @@ class CellRule:
         return birth_cond, survive_cond
 
     @classmethod
-    def apply_rule_by_conditions(cls, birth_cond, survive_cond, value, neighbors):
+    def apply_rule_binary(cls, ndim, code, value, neighbors):
+        birth_cond, survive_cond = cls.get_condition(ndim, code)
         if value == 0:
             return int(neighbors in birth_cond)
         else:
-            return int(neighbors in survive_cond) * value  # should it be multiplication?
+            return int(neighbors in survive_cond)
 
     @classmethod
-    def apply_rule_by_code(cls, ndim, code, value, neighbors):
-        c1, c2 = cls.get_condition(ndim, code)
-        return cls.apply_rule_by_conditions(c1, c2, value, neighbors)
+    def apply_rule_lifetime(cls, ndim, code, value, neighbors):
+        birth_cond, survive_cond = cls.get_condition(ndim, code)
+        if value == 0:
+            b = int(neighbors in birth_cond)
+            return b * value + b
+        else:
+            b = int(neighbors in survive_cond)
+            return  b * value + b
 
     @classmethod
     def get_max_code(cls, ndim):

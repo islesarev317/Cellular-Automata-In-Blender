@@ -217,5 +217,5 @@ class VirtualLife(VirtualFunction):
             else:
                 self.__tensor_values = copy(self.__tensor_rules)  # we can have no values at first step
                 self.__tensor_values[:] = 0  # or .fill(0) ?
-        self.__tensor_values = self.__tensor_values.next_life(self.__tensor_rules)
+        self.__tensor_values = self.__tensor_values.next_life(self.__tensor_rules, CellRule.apply_rule_binary)
         return self.__tensor_values

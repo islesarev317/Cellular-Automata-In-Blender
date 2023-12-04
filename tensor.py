@@ -1,6 +1,5 @@
 import numpy as np
 from copy import copy
-from rule import CellRule
 
 
 class LocatedTensor:
@@ -224,7 +223,7 @@ class LocatedTensor:
                 num += 1
         return num
 
-    def next_life(self, rules):
+    def next_life(self, rules, next_cell_func):
         """ apply cellular automata rules to tensor and return next tensor state """
 
         if isinstance(rules, int):
@@ -241,7 +240,7 @@ class LocatedTensor:
             cell_rule = tensor_rules.get_global(global_point)
             cell_value = self.get_global(global_point, 0)
             neighbors = self.num_alive(global_point)
-            next_cell_value = CellRule.apply_rule_by_code(tensor_rules.ndim, cell_rule, cell_value, neighbors)
+            next_cell_value = next_cell_func(self.ndim, cell_rule, cell_value, neighbors)
             tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next
