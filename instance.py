@@ -5,8 +5,9 @@ class Instance:
 
     cell_name = "Cell"
     scale_factor = 0.9
+    default_limit = 3000
 
-    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, bake_interval=1):
+    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, bake_interval=1, limit=default_limit):
         self.__tensor = None
         self.virtual_function = virtual_function
         self.grain = grain
@@ -16,7 +17,8 @@ class Instance:
         self.reserve = reserve
         self.bake = bake
         self.bake_interval = bake_interval
-        self.baked_frames = []
+        self.limit = limit
+        self.__baked_frames = []
 
     @staticmethod
     def bake(input_func):
@@ -40,9 +42,9 @@ class Instance:
 
         if self.bake:
             current_frame = blu.current_frame()
-            if current_frame in self.baked_frames:
+            if current_frame in self.__baked_frames:
                 return
-            self.baked_frames.append(current_frame)
+            self.__baked_frames.append(current_frame)
 
         curr_tensor = self.virtual_function.tensor()
         prev_tensor = self.__tensor
@@ -50,7 +52,6 @@ class Instance:
 
         prev_points = set(prev_tensor.not_null_points_global) if prev_tensor else set()
         curr_points = set(curr_tensor.not_null_points_global)
-        # reserve_points = set(self.all_objects.keys()) - prev_points - curr_points
         reserve_points = set(self.all_objects.keys()) - curr_points
 
         # create
@@ -62,8 +63,10 @@ class Instance:
                     rp = reserve_points.pop()
                     obj = self.all_objects.pop(rp)
                     blu.move_obj(obj, location, scale=0)
-                else:
+                elif len(self.all_objects) < self.limit:
                     obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
+                else:
+                    obj = None
                 self.all_objects[point] = obj
 
         # update
