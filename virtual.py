@@ -25,8 +25,8 @@ class VirtualFunction:
     def __init__(self, operator, *children):
         self.operator = operator
         self.children = children
-        self.__hash = None
-        self.__tensor = None
+        self._hash = None
+        self._tensor = None
 
     # ----------------- Computation of Tensor ----------------- #
 
@@ -39,12 +39,12 @@ class VirtualFunction:
     def tensor(self):
         """ wrap: cause compute tensor if hash changed else use saved tensor """
         new_hash = self.hash()
-        if self.__hash != new_hash:
-            self.__tensor = self.__compute()
-            self.__hash = new_hash
-        return self.__tensor
+        if self._hash != new_hash:
+            self._tensor = self.compute()
+            self._hash = new_hash
+        return self._tensor
 
-    def __compute(self):
+    def compute(self):
         """ compute total tensor as result of applying operator to child tensor """
         try:
             tensors = [child.tensor() for child in self.children]
@@ -131,12 +131,12 @@ class VirtualObject(VirtualFunction):
     def tensor(self):
         """ wrap: cause compute tensor if hash changed else use saved tensor """
         new_hash = self.hash()
-        if self.__hash != new_hash:
-            self.__tensor = self.__compute()
-            self.__hash = new_hash
-        return self.__tensor
+        if self._hash != new_hash:
+            self._tensor = self.compute()
+            self._hash = new_hash
+        return self._tensor
 
-    def __compute(self):
+    def compute(self):
         """ just a wrap """
         return self.__obj_to_tensor()
 
@@ -204,9 +204,9 @@ class VirtualLife(VirtualFunction):
 
     def tensor(self):
         """ just a wrap """
-        return self.__compute()
+        return self.compute()
 
-    def __compute(self):
+    def compute(self):
         """ compute rules, initial values, next life and keep results """
         self.__tensor_rules = self.rules_function.tensor()
         self.seq += 1
