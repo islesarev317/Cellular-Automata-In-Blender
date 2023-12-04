@@ -21,14 +21,15 @@ from virtual import VirtualObject
 
 # params
 frame_step = 1
-grain = 0.4
+grain = 0.3
+limit_cells = 5000
 collection = bpy.data.collections["Cells"]
 default_image = bpy.data.objects["Image"]
 
 # objects
-suzanne = VirtualObject(bpy.data.objects["Suzanne"], grain)
+suzanne = VirtualObject(bpy.data.objects["Suzanne"], grain).hollow()
 
 # realize
-instance = Instance(suzanne, grain, collection, default_image)
+instance = Instance(suzanne, grain, collection, default_image, limit=limit_cells)
 instance.scale_factor = 0.9
 instance.update()
