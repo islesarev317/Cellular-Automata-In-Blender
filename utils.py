@@ -64,9 +64,8 @@ def catch_scene(instance, frame_step):
     bpy.app.handlers.frame_change_pre.append(inner_catch_scene)
 
 
-def cancel_catch_scene(instance):
+def cancel_catch_scene():
     bpy.app.handlers.frame_change_pre.clear()
-    clear_collection(instance.collection)
 
 
 def current_frame():
