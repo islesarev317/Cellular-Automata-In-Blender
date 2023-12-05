@@ -7,13 +7,6 @@ dir = "/".join(dir.split("/")[:-2])
 if not dir in sys.path:
     sys.path.append(dir)
 
-import imp
-import instance
-import virtual
-
-imp.reload(instance)  # reload needs for usage in blender
-imp.reload(virtual)
-
 from instance import Instance
 from virtual import VirtualObject
 
@@ -30,9 +23,16 @@ default_image = bpy.data.objects["Image"]  # object from which cells will be cop
 
 # objects
 cube = VirtualObject(bpy.data.objects["Cube"], grain)
-cylinder = VirtualObject(bpy.data.objects["Cube"], grain)
+cylinder = VirtualObject(bpy.data.objects["Cylinder"], grain)
+sphere = VirtualObject(bpy.data.objects["Sphere"], grain)
+bar = VirtualObject(bpy.data.objects["Bar"], grain)
+cone = VirtualObject(bpy.data.objects["Cone"], grain)
+
+# expression
+vf = cube.diff(cylinder).union(sphere).diff(bar).union(cone)
+vf = vf.hollow()
 
 # realize
-instance = Instance(suzanne, grain, collection, default_image, limit=limit_cells)
-instance.scale_factor = 0.9
+instance = Instance(vf, grain, collection, default_image, limit=limit_cells)
+instance.scale_factor = 0.95
 instance.update()
