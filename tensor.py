@@ -159,15 +159,20 @@ class LocatedTensor:
         return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: a + b)
 
     def __sub__(self, other):
-        """ operation of subtraction two tensors"""
+        """ operation of subtraction two tensors """
         return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: a - b)
 
-    def fill(self, value):
-        """ set all not null points with given value """
-        result = copy(self)
-        for point in result.not_null_points_local:
-            result[point] = value
-        return result
+    def cross(self, other):
+        """ logical intersection (&) """
+        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: bool(a) & bool(b))
+
+    def union(self, other):
+        """ logical union (|) """
+        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: bool(a) | bool(b))
+
+    def diff(self, other):
+        """ logical difference (%)"""
+        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: bool(a) - bool(a * b))
 
     def minimum(self, threshold):
         """ fill with zero all values which don't satisfy the minimum  """
@@ -176,6 +181,13 @@ class LocatedTensor:
             value = result[point]
             if value < threshold:
                 result[point] = 0
+        return result
+
+    def fill(self, value):
+        """ set all not null points with given value """
+        result = copy(self)
+        for point in result.not_null_points_local:
+            result[point] = value
         return result
 
     def hollow(self):

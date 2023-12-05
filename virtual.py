@@ -69,15 +69,24 @@ class VirtualFunction:
 
     def __sub__(self, other):
         return VirtualFunction(LocatedTensor.__sub__, self, other)
+    
+    def cross(self, other):
+        return VirtualFunction(LocatedTensor.cross, self, other)
 
-    def hollow(self):
-        return VirtualFunction(LocatedTensor.hollow, self)
+    def union(self, other):
+        return VirtualFunction(LocatedTensor.union, self, other)
+
+    def diff(self, other):
+        return VirtualFunction(LocatedTensor.diff, self, other)
+
+    def minimum(self, value):
+        return VirtualFunction(LocatedTensor.minimum, self, VirtualConstant(value))
 
     def fill(self, value):
         return VirtualFunction(LocatedTensor.fill, self, VirtualConstant(value))
 
-    def minimum(self, value):
-        return VirtualFunction(LocatedTensor.minimum, self, VirtualConstant(value))
+    def hollow(self):
+        return VirtualFunction(LocatedTensor.hollow, self)
 
     def life(self):
         return VirtualLife(self)
