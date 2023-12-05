@@ -1,4 +1,5 @@
 import utils as blu
+import random
 
 
 class Instance:
@@ -63,6 +64,12 @@ class Instance:
         existed_points = set(self.all_objects.keys())
         reserve_points = existed_points - curr_points
 
+        # check limit
+        if len(curr_points) > self.limit:
+            msg = "Limit exceeded (max: " + str(self.limit) + ", current: " + str(len(curr_points)) + ")"
+            print(msg)
+            curr_points = set(random.sample(curr_points, self.limit))
+
         # create
         for point in (curr_points - existed_points):
             location = tuple(x * self.grain for x in point)
@@ -70,10 +77,8 @@ class Instance:
                 rp = reserve_points.pop()  # extract reserve point
                 obj = self.all_objects.pop(rp)  # extract reserve object
                 blu.move_obj(obj, location, scale=0)  # move reserve object
-            elif len(self.all_objects) < self.limit:
-                obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
             else:
-                obj = None
+                obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
             self.all_objects[point] = obj
 
         # update

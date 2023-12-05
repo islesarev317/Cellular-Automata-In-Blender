@@ -64,7 +64,7 @@ def catch_scene(instance, frame_step):
     bpy.app.handlers.frame_change_pre.append(inner_catch_scene)
 
 
-def cancel_catch_scene():
+def clear_handlers():
     bpy.app.handlers.frame_change_pre.clear()
 
 
@@ -82,7 +82,3 @@ def hash_obj(obj):
     hash_object.update(scale.encode())
     d = hash_object.hexdigest()
     return d
-
-
-
-

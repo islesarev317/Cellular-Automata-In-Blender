@@ -9,7 +9,7 @@ if not dir in sys.path:
 
 from instance import Instance
 from virtual import VirtualObject
-from utils import catch_scene
+from utils import catch_scene, clear_handlers
 
 # ------------------------------------------------------------------------------------ #
 # Primitives.
@@ -18,7 +18,7 @@ from utils import catch_scene
 # params
 frame_step = 1
 grain = 0.4
-limit_cells = 5000
+limit_cells = 2000
 collection = bpy.data.collections["Cells"]  # collection for cells (need to be created before script starting)
 default_image = bpy.data.objects["Image"]  # object from which cells will be copied (need to be created beforehand)
 
@@ -34,4 +34,5 @@ instance.scale_factor = 0.9
 instance.update()
 
 # handler
+clear_handlers()
 catch_scene(instance, frame_step)
