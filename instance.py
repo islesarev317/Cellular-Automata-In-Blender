@@ -10,6 +10,7 @@ class Instance:
 
     def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, bake_interval=1, limit=default_limit):
         self.__tensor = None
+        self.__current_frame = None
         self.virtual_function = virtual_function
         self.grain = grain
         self.collection = collection
@@ -31,42 +32,66 @@ class Instance:
                 self.all_objects[i] = obj
                 i += 1
 
-    @staticmethod
-    def bake(input_func):
-        def output_func(self, obj, value):
-            if self.bake:
-                current_frame = blu.current_frame()
-                obj.keyframe_insert("scale", frame=current_frame-self.bake_interval)
-                obj.keyframe_insert("location", frame=current_frame-self.bake_interval)
-                input_func(self, obj, value)
-                obj.keyframe_insert("scale", frame=current_frame)
-                obj.keyframe_insert("location", frame=current_frame)
-            else:
-                input_func(self, obj, value)
-        return output_func
+    def __get_cell_size(self, value):
+        return 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.image)
 
-    @bake
-    def __update_obj(self, obj, value):
-        obj.scale.xyz = 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.image)
+    def __bake_obj(self, obj, shift=0):
+        obj.keyframe_insert("scale", frame=self.__current_frame + shift)
+        obj.keyframe_insert("location", frame=self.__current_frame + shift)
 
     def update(self):
 
         if self.bake:
-            current_frame = blu.current_frame()
-            if current_frame in self.__baked_frames:
+            self.__current_frame = blu.current_frame()
+            if self.__current_frame in self.__baked_frames:
                 return
-            self.__baked_frames.append(current_frame)
+            self.__baked_frames.append(self.__current_frame)
 
         curr_tensor = self.virtual_function.tensor()
         prev_tensor = self.__tensor
         self.__tensor = curr_tensor
 
         prev_points = set(prev_tensor.not_null_points_global) if prev_tensor else set()
-        curr_points = set(curr_tensor.not_null_points_global)
+        curr_points = self.apply_limit(curr_tensor)
         existed_points = set(self.all_objects.keys())
         reserve_points = existed_points - curr_points
 
-        # box with message
+        # create
+        for point in (curr_points - existed_points):
+            location = tuple(x * self.grain for x in point)
+            reserve = None
+            if len(reserve_points) > 0 and self.reserve:  # optimization
+                reserve = reserve_points.pop()  # extract reserve point
+                obj = self.all_objects.pop(reserve)  # extract reserve object
+            else:
+                obj = blu.copy_obj(self.image, self.cell_name, self.collection)  # create new object
+            self.all_objects[point] = obj
+            blu.move_obj(obj, location)  # --> move
+            blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
+            if self.bake:
+                self.__bake_obj(obj)
+                if not reserve:
+                    self.__bake_obj(obj, -1)
+
+
+        # update
+        for point in curr_points:
+            obj = self.all_objects[point]
+            value = curr_tensor.get_global(point)
+            blu.scale_obj(obj, self.__get_cell_size(value))  # --> scale
+            if self.bake:
+                self.__bake_obj(obj)
+
+        # delete
+        for point in (prev_points & reserve_points):  # reserve_points after moving some point in create area
+            obj = self.all_objects[point]
+            blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
+            if self.bake:
+                self.__bake_obj(obj)
+
+    def apply_limit(self, curr_tensor):
+        """ crop set and show label """
+        curr_points = set(curr_tensor.not_null_points_global)
         curr_cnt = len(curr_points)
         msg = str(curr_cnt) + " / " + str(self.limit)
         if curr_cnt > self.limit:
@@ -76,26 +101,4 @@ class Instance:
         label_loc[2] += curr_tensor.dim[2] * self.grain  # move on the top
         blu.show_label(msg, tuple(label_loc))
         print(msg)
-
-        # create
-        for point in (curr_points - existed_points):
-            location = tuple(x * self.grain for x in point)
-            if len(reserve_points) > 0 and self.reserve:  # optimization
-                rp = reserve_points.pop()  # extract reserve point
-                obj = self.all_objects.pop(rp)  # extract reserve object
-                blu.move_obj(obj, location, scale=0)  # move reserve object
-            else:
-                obj = blu.copy_obj(self.image, self.cell_name, self.collection, location, scale=0)
-            self.all_objects[point] = obj
-
-        # update
-        for point in curr_points:
-            obj = self.all_objects[point]
-            value = curr_tensor.get_global(point)
-            self.__update_obj(obj, value)
-
-        # delete
-        for point in (prev_points & reserve_points):  # reserve_points after moving some point in create area
-            obj = self.all_objects[point]
-            value = 0
-            self.__update_obj(obj, value)
+        return curr_points

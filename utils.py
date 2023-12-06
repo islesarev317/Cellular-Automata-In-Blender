@@ -33,17 +33,18 @@ def vector(v):
     return mathutils.Vector(v)
 
 
-def copy_obj(image, name, collection, location, scale):
+def copy_obj(image, name, collection):
     obj = image.copy()
-    obj.location = location
-    obj.scale.xyz = scale
     obj.name = name
     collection.objects.link(obj)
     return obj
 
 
-def move_obj(obj, location, scale):
+def move_obj(obj, location):
     obj.location = location
+
+
+def scale_obj(obj, scale):
     obj.scale.xyz = scale
 
 
