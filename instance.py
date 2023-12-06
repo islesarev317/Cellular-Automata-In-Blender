@@ -8,7 +8,7 @@ class Instance:
     scale_factor = 0.9
     default_limit = 3000
 
-    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, bake_interval=1, limit=default_limit):
+    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, frame_step=1, limit=default_limit):
         self.__tensor = None
         self.__start_frame = None
         self.__current_frame = None
@@ -20,7 +20,7 @@ class Instance:
         self.all_objects = {}
         self.reserve = reserve
         self.bake = bake
-        self.bake_interval = bake_interval
+        self.frame_step = frame_step
         self.limit = limit
         self.__baked_frames = []
         self.__reuse_objects()
@@ -78,10 +78,10 @@ class Instance:
             blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
             if self.bake:
                 self.__bake_obj(obj)
-                if self.bake_interval == 1:
+                if self.frame_step == 1:
                     self.__bake_obj(obj, -1)
-                if self.bake_interval > 1:
-                    self.__bake_obj(obj, 1 - self.bake_interval)
+                if self.frame_step > 1:
+                    self.__bake_obj(obj, 1 - self.frame_step)
 
         # update
         for point in curr_points:

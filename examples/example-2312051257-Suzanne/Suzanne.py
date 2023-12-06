@@ -24,7 +24,6 @@ from virtual import VirtualObject
 # ------------------------------------------------------------------------------------ #
 
 # params
-frame_step = 1
 grain = 0.3
 limit_cells = 5000
 collection = bpy.data.collections["Cells"]  # collection for cells (need to be created before script starting)

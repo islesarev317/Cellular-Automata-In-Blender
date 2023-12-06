@@ -31,10 +31,10 @@ vf = cube.hollow()
 
 # realize
 instance = Instance(vf, grain, collection, 
-                    default_image, limit=limit_cells, bake=True, bake_interval=frame_step)
+                    default_image, limit=limit_cells, bake=True, frame_step=frame_step)
 instance.scale_factor = 0.9
 instance.update()
 
 # handler
 clear_handlers()
-catch_scene(instance, frame_step)
+catch_scene(instance)

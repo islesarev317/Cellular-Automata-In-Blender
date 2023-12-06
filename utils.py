@@ -48,12 +48,12 @@ def scale_obj(obj, scale):
     obj.scale.xyz = scale
 
 
-def catch_scene(instance, frame_step):
+def catch_scene(instance):
 
     def inner_catch_scene(self, context):
         try:
             nonlocal instance
-            nonlocal frame_step
+            frame_step = instance.frame_step
             frame = bpy.context.scene.frame_current
             if frame % frame_step == 0:
                 instance.update()
