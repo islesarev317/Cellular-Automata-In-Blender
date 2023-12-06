@@ -84,9 +84,9 @@ def hash_obj(obj):
     return d
 
 
-def show_label(collection, msg, loc=(0, 0, 0)):
+def show_label(msg, loc=(0, 0, 0)):
     # find
-    label = next((obj for obj in collection.objects if obj.name.startswith("INFO:")), None)
+    label = next((obj for obj in bpy.context.collection.objects if obj.name.startswith("INFO:")), None)
 
     if label is None:
         # create
