@@ -26,6 +26,7 @@ class Instance:
         i = 0
         for obj in self.collection.objects:
             if obj.name.startswith(self.cell_name):
+                obj.animation_data_clear()
                 obj.scale.xyz = 0
                 self.all_objects[i] = obj
                 i += 1
