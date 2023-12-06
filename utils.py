@@ -85,11 +85,16 @@ def hash_obj(obj):
 
 
 def show_label(msg, loc=(0, 0, 0)):
+    
     # find
-    label = next((obj for obj in bpy.context.collection.objects if obj.name.startswith("INFO:")), None)
+    label = None
+    for collection in bpy.data.collections:
+        label = next((obj for obj in collection if obj.name.startswith("INFO:")), None)
+        if label:
+            break
 
+    # create
     if label is None:
-        # create
         bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD')
         label = bpy.context.active_object
         label.show_name = True
