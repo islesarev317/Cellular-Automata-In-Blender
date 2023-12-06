@@ -17,7 +17,7 @@ from utils import catch_scene, clear_handlers
 # ------------------------------------------------------------------------------------ #
 
 # params
-frame_step = 40
+frame_step = 5
 grain = 0.35
 limit_cells = 2000
 collection = bpy.data.collections["Cells"]  # collection for cells (need to be created before script starting)
