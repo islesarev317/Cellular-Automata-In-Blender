@@ -12,8 +12,8 @@ from virtual import VirtualObject
 from utils import catch_scene, clear_handlers
 
 # ------------------------------------------------------------------------------------ #
-# Primitives.
-# (catch_scene handler doesn't save with blender file, so we need to launch the script)
+# Baking.
+# (creating keyframes for animation's optimization)
 # ------------------------------------------------------------------------------------ #
 
 # params
