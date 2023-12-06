@@ -82,3 +82,19 @@ def hash_obj(obj):
     hash_object.update(scale.encode())
     d = hash_object.hexdigest()
     return d
+
+
+def show_label(msg, loc=(0, 0, 0)):
+    # find
+    label = next((obj for obj in bpy.context.collection.objects if obj.name.startswith("INFO:")), None)
+
+    if label is None:
+        # create
+        bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD')
+        label = bpy.context.active_object
+        label.show_name = True
+        label.show_in_front = True
+
+    # update
+    label.name = "INFO: " + msg
+    label.location = loc

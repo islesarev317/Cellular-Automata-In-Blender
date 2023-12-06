@@ -64,11 +64,17 @@ class Instance:
         existed_points = set(self.all_objects.keys())
         reserve_points = existed_points - curr_points
 
-        # check limit
-        if len(curr_points) > self.limit:
-            msg = "Limit exceeded (max: " + str(self.limit) + ", current: " + str(len(curr_points)) + ")"
-            print(msg)
-            curr_points = set(random.sample(curr_points, self.limit))
+        # box with message
+        curr_cnt = len(curr_points)
+        all_cnt = len(existed_points)
+        msg = str(curr_cnt) + " / " + str(all_cnt) + " / " + str(self.limit)
+        if curr_cnt > self.limit:
+            curr_points = set(random.sample(curr_points, self.limit))  # crop set of points!
+            msg += " (LIMIT EXCEEDED!)"
+        label_loc = [(curr_tensor.corner[i] + curr_tensor.dim[i] / 2) * self.grain for i in range(3)]  # center
+        label_loc[2] += curr_tensor.dim[2] * self.grain # move on the top
+        blu.show_label(msg, tuple(label_loc))
+        print(msg)
 
         # create
         for point in (curr_points - existed_points):
