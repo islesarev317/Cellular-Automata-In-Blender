@@ -72,7 +72,7 @@ class Instance:
             msg += " (LIMIT EXCEEDED!)"
         label_loc = [(curr_tensor.corner[i] + curr_tensor.dim[i] / 2) * self.grain for i in range(3)]  # center
         label_loc[2] += curr_tensor.dim[2] * self.grain  # move on the top
-        blu.show_label(msg, tuple(label_loc))
+        blu.show_label(self.collection, msg, tuple(label_loc))
         print(msg)
 
         # create
