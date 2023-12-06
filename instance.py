@@ -38,15 +38,17 @@ class Instance:
         return 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.image)
 
     def __bake_obj(self, obj, shift=0):
-        if self.__start_frame <= self.__current_frame <= self.__end_frame:
-            obj.keyframe_insert("scale", frame=self.__current_frame + shift)
-            obj.keyframe_insert("location", frame=self.__current_frame + shift)
+        obj.keyframe_insert("scale", frame=self.__current_frame + shift)
+        obj.keyframe_insert("location", frame=self.__current_frame + shift)
 
     def update(self):
 
         self.__start_frame = blu.start_frame()
         self.__current_frame = blu.current_frame()
         self.__end_frame = blu.end_frame()
+
+        if not(self.__start_frame <= self.__current_frame <= self.__end_frame):
+            return
 
         if self.bake:
             if self.__start_frame <= self.__current_frame <= self.__end_frame:
@@ -61,12 +63,11 @@ class Instance:
         prev_points = set(prev_tensor.not_null_points_global) if prev_tensor else set()
         curr_points = self.apply_limit(curr_tensor)
         existed_points = set(self.all_objects.keys())
-        reserve_points = existed_points - curr_points
+        reserve_points = (existed_points - curr_points) - prev_points
 
         # create
         for point in (curr_points - existed_points):
             location = tuple(x * self.grain for x in point)
-            reserve = None
             if len(reserve_points) > 0 and self.reserve:  # optimization
                 reserve = reserve_points.pop()  # extract reserve point
                 obj = self.all_objects.pop(reserve)  # extract reserve object
@@ -77,9 +78,10 @@ class Instance:
             blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
             if self.bake:
                 self.__bake_obj(obj)
-                if not reserve:
+                if self.bake_interval == 1:
                     self.__bake_obj(obj, -1)
-
+                if self.bake_interval > 1:
+                    self.__bake_obj(obj, 1 - self.bake_interval)
 
         # update
         for point in curr_points:
@@ -90,7 +92,7 @@ class Instance:
                 self.__bake_obj(obj)
 
         # delete
-        for point in (prev_points & reserve_points):  # reserve_points after moving some point in create area
+        for point in (prev_points - curr_points):
             obj = self.all_objects[point]
             blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
             if self.bake:

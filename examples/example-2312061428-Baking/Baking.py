@@ -17,7 +17,7 @@ from utils import catch_scene, clear_handlers
 # ------------------------------------------------------------------------------------ #
 
 # params
-frame_step = 1
+frame_step = 40
 grain = 0.35
 limit_cells = 2000
 collection = bpy.data.collections["Cells"]  # collection for cells (need to be created before script starting)
@@ -30,7 +30,8 @@ cube = VirtualObject(bpy.data.objects["Cube"], grain)
 vf = cube.hollow()
 
 # realize
-instance = Instance(vf, grain, collection, default_image, limit=limit_cells, bake=True)
+instance = Instance(vf, grain, collection, 
+                    default_image, limit=limit_cells, bake=True, bake_interval=frame_step)
 instance.scale_factor = 0.9
 instance.update()
 
