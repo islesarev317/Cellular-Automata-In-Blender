@@ -10,7 +10,9 @@ class Instance:
 
     def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, bake_interval=1, limit=default_limit):
         self.__tensor = None
+        self.__start_frame = None
         self.__current_frame = None
+        self.__end_frame = None
         self.virtual_function = virtual_function
         self.grain = grain
         self.collection = collection
@@ -36,16 +38,21 @@ class Instance:
         return 0 if value == 0 else self.grain * self.scale_factor * blu.normalize_factor(self.image)
 
     def __bake_obj(self, obj, shift=0):
-        obj.keyframe_insert("scale", frame=self.__current_frame + shift)
-        obj.keyframe_insert("location", frame=self.__current_frame + shift)
+        if self.__start_frame <= self.__current_frame <= self.__end_frame:
+            obj.keyframe_insert("scale", frame=self.__current_frame + shift)
+            obj.keyframe_insert("location", frame=self.__current_frame + shift)
 
     def update(self):
 
+        self.__start_frame = blu.start_frame()
+        self.__current_frame = blu.current_frame()
+        self.__end_frame = blu.end_frame()
+
         if self.bake:
-            self.__current_frame = blu.current_frame()
-            if self.__current_frame in self.__baked_frames:
-                return
-            self.__baked_frames.append(self.__current_frame)
+            if self.__start_frame <= self.__current_frame <= self.__end_frame:
+                if self.__current_frame in self.__baked_frames:
+                    return
+                self.__baked_frames.append(self.__current_frame)
 
         curr_tensor = self.virtual_function.tensor()
         prev_tensor = self.__tensor

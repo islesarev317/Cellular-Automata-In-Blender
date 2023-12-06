@@ -73,6 +73,14 @@ def current_frame():
     return bpy.context.scene.frame_current
 
 
+def start_frame():
+    return bpy.context.scene.frame_start
+
+
+def end_frame():
+    return bpy.context.scene.frame_end
+
+
 def hash_obj(obj):
     location = str(obj.location)
     rotation = str(obj.rotation_euler)
