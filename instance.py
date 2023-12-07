@@ -66,8 +66,6 @@ class Instance:
         existed_points = set(self.all_objects.keys())
         reserve_points = (existed_points - curr_points) - prev_points
 
-        self.apply_limit(curr_tensor)
-
         # create
         for point in (curr_points - existed_points):
             location = tuple(x * self.grain for x in point)
@@ -75,8 +73,9 @@ class Instance:
                 reserve = reserve_points.pop()  # extract reserve point
                 obj = self.all_objects.pop(reserve)  # extract reserve object
             else:
-                obj = blu.copy_obj(self.image, self.cell_name, self.collection)  # create new object
-                if len(self.all_objects) >= self.limit:
+                if len(self.all_objects) < self.limit:
+                    obj = blu.copy_obj(self.image, self.cell_name, self.collection)  # create new object
+                else:
                     break
             self.all_objects[point] = obj
             blu.move_obj(obj, location)  # --> move
@@ -109,7 +108,9 @@ class Instance:
                 if self.bake:
                     self.__bake_obj(obj)
 
-    def apply_limit(self, curr_tensor):
+        self.info_limit(curr_tensor)
+
+    def info_limit(self, curr_tensor):
         """ crop set and show label """
         curr_points = set(curr_tensor.not_null_points_global)
         label_msg = str(len(curr_points)) + " (" + str(len(self.all_objects)) + ") " + " / " + str(self.limit)
