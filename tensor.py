@@ -181,7 +181,7 @@ class LocatedTensor:
 
     def diff(self, other):
         """ logical difference (%)"""
-        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: bool(a) - bool(a * b))
+        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: (bool(a) - bool(a * b)) * a)
 
     def minimum(self, threshold):
         """ fill with zero all values which don't satisfy the minimum  """
