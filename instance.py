@@ -62,9 +62,11 @@ class Instance:
         self.__tensor = curr_tensor
 
         prev_points = set(prev_tensor.not_null_points_global) if prev_tensor else set()
-        curr_points = self.apply_limit(curr_tensor)
+        curr_points = set(curr_tensor.not_null_points_global)
         existed_points = set(self.all_objects.keys())
         reserve_points = (existed_points - curr_points) - prev_points
+
+        self.apply_limit(curr_tensor)
 
         # create
         for point in (curr_points - existed_points):
@@ -74,6 +76,8 @@ class Instance:
                 obj = self.all_objects.pop(reserve)  # extract reserve object
             else:
                 obj = blu.copy_obj(self.image, self.cell_name, self.collection)  # create new object
+                if len(self.all_objects) >= self.limit:
+                    break
             self.all_objects[point] = obj
             blu.move_obj(obj, location)  # --> move
             blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
@@ -86,33 +90,33 @@ class Instance:
 
         # update
         for point in curr_points:
-            obj = self.all_objects[point]
-            value = curr_tensor.get_global(point)
-            if self.bake and self.frame_step > 1:
-                self.__bake_obj(obj, 1 - self.frame_step)
-            blu.scale_obj(obj, self.__get_cell_size(value))  # --> scale
-            if self.bake:
-                self.__bake_obj(obj)
+            if point in self.all_objects:
+                obj = self.all_objects[point]
+                value = curr_tensor.get_global(point)
+                if self.bake and self.frame_step > 1:
+                    self.__bake_obj(obj, 1 - self.frame_step)
+                blu.scale_obj(obj, self.__get_cell_size(value))  # --> scale
+                if self.bake:
+                    self.__bake_obj(obj)
 
         # delete
         for point in (prev_points - curr_points):
-            obj = self.all_objects[point]
-            if self.bake and self.frame_step > 1:
-                self.__bake_obj(obj, 1 - self.frame_step)
-            blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
-            if self.bake:
-                self.__bake_obj(obj)
+            if point in self.all_objects:
+                obj = self.all_objects[point]
+                if self.bake and self.frame_step > 1:
+                    self.__bake_obj(obj, 1 - self.frame_step)
+                blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
+                if self.bake:
+                    self.__bake_obj(obj)
 
     def apply_limit(self, curr_tensor):
         """ crop set and show label """
         curr_points = set(curr_tensor.not_null_points_global)
-        curr_cnt = len(curr_points)
-        msg = str(curr_cnt) + " (" + str(len(self.all_objects)) + ") " + " / " + str(self.limit)
-        if curr_cnt > self.limit:
-            curr_points = set(random.sample(curr_points, self.limit))  # crop set of points!
-            msg += " (LIMIT EXCEEDED!)"
+        label_msg = str(len(curr_points)) + " (" + str(len(self.all_objects)) + ") " + " / " + str(self.limit)
         label_loc = [(curr_tensor.corner[i] + curr_tensor.dim[i] / 2) * self.grain for i in range(3)]  # center
         label_loc[2] += curr_tensor.dim[2] * self.grain  # move on the top
-        blu.show_label(msg, tuple(label_loc))
-        print(msg)
-        return curr_points
+        if len(curr_points) > self.limit:
+            # curr_points = set(random.sample(curr_points, self.limit))  # crop set of points!
+            label_msg += " (LIMIT EXCEEDED!)"
+        blu.show_label(label_msg, tuple(label_loc))
+        # return curr_points
