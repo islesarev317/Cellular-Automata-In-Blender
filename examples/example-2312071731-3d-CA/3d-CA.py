@@ -32,7 +32,7 @@ cube = VirtualObject(bpy.data.objects["Cube"], grain)
 sphere = VirtualObject(bpy.data.objects["Sphere"], grain)
 
 # rule
-code = CellRule.get_code(3, [5, 6], [2, 3, 4])
+code = CellRule.get_code(ndim=3, birth_cond=[5, 6], survive_cond=[2, 3, 4])
 
 # expression
 vf_init = sphere.random_fill([0, 1]).mirror()
