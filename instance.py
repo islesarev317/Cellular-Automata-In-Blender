@@ -88,6 +88,8 @@ class Instance:
         for point in curr_points:
             obj = self.all_objects[point]
             value = curr_tensor.get_global(point)
+            if self.frame_step > 1:
+                self.__bake_obj(obj, 1 - self.frame_step)
             blu.scale_obj(obj, self.__get_cell_size(value))  # --> scale
             if self.bake:
                 self.__bake_obj(obj)
@@ -95,6 +97,8 @@ class Instance:
         # delete
         for point in (prev_points - curr_points):
             obj = self.all_objects[point]
+            if self.frame_step > 1:
+                self.__bake_obj(obj, 1 - self.frame_step)
             blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
             if self.bake:
                 self.__bake_obj(obj)

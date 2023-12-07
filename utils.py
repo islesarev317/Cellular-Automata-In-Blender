@@ -81,6 +81,10 @@ def end_frame():
     return bpy.context.scene.frame_end
 
 
+def set_start_frame():
+    bpy.context.scene.frame_set(1)
+
+
 def hash_obj(obj):
     location = str(obj.location)
     rotation = str(obj.rotation_euler)
