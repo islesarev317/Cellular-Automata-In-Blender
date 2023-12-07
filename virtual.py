@@ -85,6 +85,9 @@ class VirtualFunction:
     def fill(self, value):
         return VirtualFunction(LocatedTensor.fill, self, VirtualConstant(value))
 
+    def random_fill(self, values):
+        return VirtualFunction(LocatedTensor.random_fill, self, VirtualConstant(values))
+
     def hollow(self):
         return VirtualFunction(LocatedTensor.hollow, self)
 

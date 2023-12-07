@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from copy import copy
 
 
@@ -196,6 +197,13 @@ class LocatedTensor:
         result = copy(self)
         for point in result.not_null_points_local:
             result[point] = value
+        return result
+
+    def random_fill(self, values):
+        """ set all not null points with random value """
+        result = copy(self)
+        for point in result.not_null_points_local:
+            result[point] = random.choice(values)
         return result
 
     def hollow(self):
