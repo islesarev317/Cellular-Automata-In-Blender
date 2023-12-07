@@ -91,6 +91,9 @@ class VirtualFunction:
     def life(self):
         return VirtualLife(self)
 
+    def mirror(self):
+        return VirtualFunction(LocatedTensor.mirror, self)
+
 
 # ==================================== #
 # ======= 2. VirtualConstant ========= #

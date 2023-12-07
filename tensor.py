@@ -37,7 +37,6 @@ class LocatedTensor:
         value = np.random.choice([0, 1], np.prod(list(dim)), p=[1-density, density]).reshape(dim)
         return cls(corner, value)
 
-
     # ----------------- Values ----------------- #
 
     def __getitem__(self, key):
@@ -265,6 +264,18 @@ class LocatedTensor:
             tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next
+
+    def mirror(self):
+        """ allow to get symmetry tensor"""
+        result = copy(self)
+        for i in range(self.ndim):
+            size = self.dim[i]
+            half = size // 2
+            shift = half % 2
+            left = tuple([slice(None)] * i + [slice(0, half)])
+            right = tuple([slice(None)] * i + [slice(half + shift, None)])
+            result[left] = np.flip(result[right], axis=i)
+        return result
 
     # ----------------- Others ----------------- #
 
