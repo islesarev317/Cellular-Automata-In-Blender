@@ -19,17 +19,17 @@ from tensor import LocatedTensor
 # ------------------------------------------------------------------------------------ #
 
 # params
-frame_step = 1
+frame_step = 15
 grain = 0.5
 limit_cells = 2000
 collection = bpy.data.collections["Cells"]  # collection for cells (need to be created before script starting)
 default_image = bpy.data.objects["Image"]  # object from which cells will be copied (need to be created beforehand)
 
 # objects
-init_array = np.array([[[0, 0, 0, 0, 0, 0],
+init_array = np.array([[[0, 1, 0, 0, 0, 0],
                         [0, 0, 1, 0, 0, 0],
-                        [0, 0, 0, 1, 0, 0],
-                        [0, 1, 1, 1, 0, 0],
+                        [1, 1, 1, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0]]])
 init_tensor = LocatedTensor((0, 0, 0), init_array, axis_magic=True)
@@ -41,8 +41,8 @@ rule_constant = VirtualConstant(code_life_rule)
 vf = VirtualLife(rule_constant, init_constant)
 
 # realize
-instance = Instance(vf, grain, collection,
-                    default_image, limit=limit_cells, bake=True, frame_step=frame_step)
+instance = Instance(vf, grain, collection, default_image, limit=limit_cells,
+                    bake=True, frame_step=frame_step)
 instance.scale_factor = 0.9
 instance.update()
 

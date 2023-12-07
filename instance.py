@@ -8,7 +8,8 @@ class Instance:
     scale_factor = 0.9
     default_limit = 3000
 
-    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False, frame_step=1, limit=default_limit):
+    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False,
+                 frame_step=1, limit=default_limit):
         self.__tensor = None
         self.__start_frame = None
         self.__current_frame = None
