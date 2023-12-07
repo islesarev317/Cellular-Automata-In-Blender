@@ -7,9 +7,10 @@ class Instance:
     cell_name = "Cell"
     scale_factor = 0.9
     default_limit = 3000
+    prop_name = "value"
 
     def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False,
-                 frame_step=1, limit=default_limit):
+                 frame_step=1, limit=default_limit, provide_prop=False):
         self.__tensor = None
         self.__start_frame = None
         self.__current_frame = None
@@ -23,6 +24,7 @@ class Instance:
         self.bake = bake
         self.frame_step = frame_step
         self.limit = limit
+        self.provide_prop = provide_prop
         self.__baked_frames = []
         self.__reuse_objects()
 
@@ -41,6 +43,8 @@ class Instance:
     def __bake_obj(self, obj, shift=0):
         obj.keyframe_insert("scale", frame=self.__current_frame + shift)
         obj.keyframe_insert("location", frame=self.__current_frame + shift)
+        if self.provide_prop:
+            obj.keyframe_insert(data_path='["' + self.prop_name + '"]', frame=self.__current_frame + shift)
 
     def update(self):
 
@@ -80,6 +84,8 @@ class Instance:
             self.all_objects[point] = obj
             blu.move_obj(obj, location)  # --> move
             blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
+            if self.provide_prop:
+                blu.prop_obj(obj, self.prop_name, value=0)  # --> property
             if self.bake:
                 self.__bake_obj(obj)
                 if self.frame_step == 1:
@@ -95,6 +101,8 @@ class Instance:
                 if self.bake and self.frame_step > 1:
                     self.__bake_obj(obj, 1 - self.frame_step)
                 blu.scale_obj(obj, self.__get_cell_size(value))  # --> scale
+                if self.provide_prop:
+                    blu.prop_obj(obj, self.prop_name, value)  # --> property
                 if self.bake:
                     self.__bake_obj(obj)
 
@@ -105,6 +113,8 @@ class Instance:
                 if self.bake and self.frame_step > 1:
                     self.__bake_obj(obj, 1 - self.frame_step)
                 blu.scale_obj(obj, self.__get_cell_size(0))  # --> scale
+                if self.provide_prop:
+                    blu.prop_obj(obj, self.prop_name, value=0)  # --> property
                 if self.bake:
                     self.__bake_obj(obj)
 

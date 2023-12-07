@@ -48,6 +48,10 @@ def scale_obj(obj, scale):
     obj.scale.xyz = scale
 
 
+def prop_obj(obj, prop_name, value):
+    obj[prop_name] = value
+
+
 def catch_scene(instance):
 
     def inner_catch_scene(self, context):

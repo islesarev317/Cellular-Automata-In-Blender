@@ -201,7 +201,7 @@ class VirtualLife(VirtualFunction):
     Implementation of John Conway's Game of Life
     """
 
-    def __init__(self, rules_function, initial_function=None):
+    def __init__(self, rules_function, initial_function=None, lifetime=False):
         """
         param virtual_function is virtual function which return tensor with rules in each cell of the tensor
         param initial_function is virtual function which return tensor for initialization __tensor_values
@@ -209,6 +209,7 @@ class VirtualLife(VirtualFunction):
         super().__init__(None, None)  # we use self.virtual_function for the only children
         self.rules_function = rules_function
         self.initial_function = initial_function
+        self.lifetime = lifetime
         self.__tensor_rules = None
         self.__tensor_values = None
         self.seq = 0
@@ -232,5 +233,6 @@ class VirtualLife(VirtualFunction):
             else:
                 self.__tensor_values = copy(self.__tensor_rules)  # we can have no values at first step
                 self.__tensor_values[:] = 0  # or .fill(0) ?
-        self.__tensor_values = self.__tensor_values.next_life(self.__tensor_rules, CellRule.apply_rule_binary)
+        apply_func = CellRule.apply_rule_lifetime if self.lifetime else CellRule.apply_rule_binary
+        self.__tensor_values = self.__tensor_values.next_life(self.__tensor_rules, apply_func)
         return self.__tensor_values

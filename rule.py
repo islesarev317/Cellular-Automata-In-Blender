@@ -78,7 +78,7 @@ class CellRule:
             return b * value + b
         else:
             b = int(neighbors in survive_cond)
-            return  b * value + b
+            return b * value + b
 
     @classmethod
     def get_max_code(cls, ndim):
