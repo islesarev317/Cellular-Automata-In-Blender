@@ -279,7 +279,7 @@ class LocatedTensor:
         for i in range(self.ndim):
             size = self.dim[i]
             half = size // 2
-            shift = half % 2
+            shift = size % 2
             left = tuple([slice(None)] * i + [slice(0, half)])
             right = tuple([slice(None)] * i + [slice(half + shift, None)])
             result[left] = np.flip(result[right], axis=i)
