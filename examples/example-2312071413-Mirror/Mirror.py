@@ -10,18 +10,19 @@ if not dir in sys.path:
 
 from instance import Instance
 from virtual import VirtualObject, VirtualConstant, VirtualLife
-from utils import catch_scene, clear_handlers
+from utils import catch_scene, clear_handlers, set_start_frame
 from rule import CellRule
 from tensor import LocatedTensor
 
 # ------------------------------------------------------------------------------------ #
-# Game of Life (2d). Random initial set.
-# After baking animation we can change Interpolation Mode for keys
-# Cells collection => Select objects => Animation tab => Key => Interpolation mode
+# Game of Life (2d). Symmetry initial set.
 # ------------------------------------------------------------------------------------ #
 
+# scene
+set_start_frame()
+
 # params
-frame_step = 7
+frame_step = 10
 grain = 0.5
 limit_cells = 2000
 collection = bpy.data.collections["Cells"]  # collection for cells (need to be created before script starting)
