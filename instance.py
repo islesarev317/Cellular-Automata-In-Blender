@@ -48,7 +48,7 @@ class Instance:
         self.__current_frame = blu.current_frame()
         self.__end_frame = blu.end_frame()
 
-        if not(self.__start_frame <= self.__current_frame <= self.__end_frame):
+        if not (self.__start_frame <= self.__current_frame <= self.__end_frame):
             return
 
         if self.bake:
@@ -107,7 +107,7 @@ class Instance:
         """ crop set and show label """
         curr_points = set(curr_tensor.not_null_points_global)
         curr_cnt = len(curr_points)
-        msg = str(curr_cnt) + " / " + str(self.limit)
+        msg = str(curr_cnt) + " (" + str(len(self.all_objects)) + ") " + " / " + str(self.limit)
         if curr_cnt > self.limit:
             curr_points = set(random.sample(curr_points, self.limit))  # crop set of points!
             msg += " (LIMIT EXCEEDED!)"
