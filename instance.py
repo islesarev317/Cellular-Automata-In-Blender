@@ -102,7 +102,7 @@ class Instance:
                     self.__bake_obj(obj, 1 - self.frame_step)
                 blu.scale_obj(obj, self.__get_cell_size(value))  # --> scale
                 if self.provide_prop:
-                    blu.prop_obj(obj, self.prop_name, value)  # --> property
+                    blu.prop_obj(obj, self.prop_name, float(value))  # --> property
                 if self.bake:
                     self.__bake_obj(obj)
 

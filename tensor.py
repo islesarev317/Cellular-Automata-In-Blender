@@ -27,7 +27,7 @@ class LocatedTensor:
         """ alternative creator, which fills tensor with zeros values """
         if corner is None:
             corner = tuple(np.zeros(len(dim)).astype(int))  # set default value if it's necessary
-        value = np.zeros(dim)
+        value = np.zeros(dim, dtype=int)
         return cls(corner, value)
 
     @classmethod

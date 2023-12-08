@@ -79,8 +79,14 @@ class VirtualFunction:
     def diff(self, other):
         return VirtualFunction(LocatedTensor.diff, self, other)
 
+    def background(self, other):
+        return VirtualFunction(LocatedTensor.background, self, other)
+
     def minimum(self, value):
         return VirtualFunction(LocatedTensor.minimum, self, VirtualConstant(value))
+
+    def maximum(self, value):
+        return VirtualFunction(LocatedTensor.maximum, self, VirtualConstant(value))
 
     def fill(self, value):
         return VirtualFunction(LocatedTensor.fill, self, VirtualConstant(value))
