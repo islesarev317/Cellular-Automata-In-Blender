@@ -22,31 +22,64 @@
 
 ***
 
-### Планируется релизовать:
+### TODO
 
-- Функционал для привязки определенного правила клеточного автомата к конкретному объекту.
-- Функционал для привязки определенного правила клеточного автомата к определенной клетке матрицы.
-- Функционал для расчетов состояний матриц как клеточных автоматов.
-- Интерфейс для моделирования сцены непосредственно без запуска скриптов напрямую.
+- [ ] Добавление класса `VirtualProperty` связывающего заданный пользователем **параметр в Blender** и **Python объект**. Таким образом возможно будет динамически изменять некоторые параметры CA (например, правила CA) без необходимости редактирования и перезапуска управляющего скрипта *(virtual.py)*
+- [ ] Оптимизация функции `next_life` *(tensor.py)*
+- [ ] Разработка интерфейса
 
 ***
 
 ### Галерея
 
-![Peek 2023-11-22 20-11](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/5d972e9e-1028-43d8-9949-afb526b13bd1)
+1) [Lifetime.py](examples/example-2312080014-Lifetime/Lifetime.py)
 
-![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/c2934f8f-6050-4b27-9937-f737b36821f1)
+![Lifetime.gif](examples/example-2312080014-Lifetime/Lifetime.gif)
 
-![image](https://github.com/islesarev317/Cellular-Automata-in-Blender/assets/78931652/f0e3bcfe-6b2c-4dc9-b80a-210aebfe3e04)
+2) [Melting-Caves.py](examples/example-2312071853-Melting-Caves/Melting-Caves.py)
 
-***
+![Melting-Caves.gif](examples/example-2312071853-Melting-Caves/Melting-Caves.gif)
 
-# Схемы
+3) [Cube-Life.py](examples/example-2312071646-Cube-Life/Cube-Life.py)
 
-### 1) tensor.py
+![Cube-Life.gif](examples/example-2312071646-Cube-Life/Cube-Life.gif)
 
-![tensor](https://github.com/islesarev317/NumPy-Education/assets/78931652/b63a2a5c-01b2-4d98-90f2-40549df5325e)
+4) [Glider.py](examples/example-2312070008-Glider/Glider.py)
 
-### 2) virtual.py
+![Glider.gif](examples/example-2312070008-Glider/Glider.gif)
 
-![rule](https://github.com/islesarev317/NumPy-Education/assets/78931652/29157797-a1e6-4f24-8c79-62d8ac8fa0c1)
+5) [Primitives.py](examples/example-2312051343-Primitives/Primitives.py)
+
+![Primitives.png](examples/example-2312051343-Primitives/Primitives.png)
+
+6) [3d-CA.py](examples/example-2312071731-3d-CA/3d-CA.py)
+
+![3d-CA.gif](examples/example-2312071731-3d-CA/3d-CA-2.gif)
+
+7) [Game-Random.py](examples/example-2312071334-Game-Random/Game-Random.py)
+
+![Game-Random.gif](examples/example-2312071334-Game-Random/Game-Random.gif)
+
+8) [Mirror.py](examples/example-2312071413-Mirror/Mirror.py)
+
+![Mirror.gif](examples/example-2312071413-Mirror/Mirror.gif)
+
+9) [Suzanne.py](examples/example-2312051257-Suzanne/Suzanne.py)
+
+![Suzanne.png](examples/example-2312051257-Suzanne/Suzanne.png)
+
+10) [Animation.py](examples/example-2312051635-Animation/Animation.py)
+
+![Animation.gif](examples/example-2312051635-Animation/Animation.gif)
+
+11) [Baking.py](examples/example-2312061428-Baking/Baking.py)
+
+![Baking.gif](examples/example-2312061428-Baking/Baking.gif)
+
+12) [Property.py](examples/example-2312072351-Property/Property.py)
+
+![Property.png](examples/example-2312072351-Property/Property.png)
+
+13) [Limit-Test.py](examples/example-2312071934-Limit-Test/Limit-Test.py)
+
+![Limit-Test.gif](examples/example-2312071934-Limit-Test/Limit-Test.gif)
