@@ -183,9 +183,13 @@ class LocatedTensor:
         """ logical difference (%)"""
         return LocatedTensor.__base_ops(self, other, lambda a, b: (bool(a) - bool(a * b)) * a)
 
-    def background(self, other):
-        """ set other tensor as a background (change only zero values for the first tensor) """
+    def __rshift__(self, other):
+        """ >> set other tensor as a background (change only zero values for the first tensor) """
         return LocatedTensor.__base_ops(self, other, lambda a, b: b if a == 0 else a)
+
+    def __lshift__(self, other):
+        """ << set the first tensor as a background (change only zero values for the first tensor) """
+        return LocatedTensor.__base_ops(self, other, lambda a, b: a if b == 0 else b)
 
     def minimum(self, threshold):
         """ fill with threshold all values which don't satisfy the minimum  """

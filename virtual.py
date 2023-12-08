@@ -79,8 +79,11 @@ class VirtualFunction:
     def diff(self, other):
         return VirtualFunction(LocatedTensor.diff, self, other)
 
-    def background(self, other):
-        return VirtualFunction(LocatedTensor.background, self, other)
+    def __rshift__(self, other):
+        return VirtualFunction(LocatedTensor.__rshift__, self, other)
+
+    def __lshift__(self, other):
+        return VirtualFunction(LocatedTensor.__lshift__, self, other)
 
     def minimum(self, value):
         return VirtualFunction(LocatedTensor.minimum, self, VirtualConstant(value))
