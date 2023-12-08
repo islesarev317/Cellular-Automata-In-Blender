@@ -173,23 +173,36 @@ class LocatedTensor:
 
     def cross(self, other):
         """ logical intersection (&) """
-        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: bool(a) & bool(b))
+        return LocatedTensor.__base_ops(self, other, lambda a, b: bool(a) & bool(b))
 
     def union(self, other):
         """ logical union (|) """
-        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: bool(a) | bool(b))
+        return LocatedTensor.__base_ops(self, other, lambda a, b: bool(a) | bool(b))
 
     def diff(self, other):
         """ logical difference (%)"""
-        return LocatedTensor.__base_ops_broadcast(self, other, lambda a, b: (bool(a) - bool(a * b)) * a)
+        return LocatedTensor.__base_ops(self, other, lambda a, b: (bool(a) - bool(a * b)) * a)
+
+    def background(self, other):
+        """ set other tensor as a background (change only zero values for the first tensor) """
+        return LocatedTensor.__base_ops(self, other, lambda a, b: b if a == 0 else a)
 
     def minimum(self, threshold):
-        """ fill with zero all values which don't satisfy the minimum  """
+        """ fill with threshold all values which don't satisfy the minimum  """
         result = copy(self)
         for point in result.not_null_points_local:
             value = result[point]
             if value < threshold:
-                result[point] = 0
+                result[point] = threshold
+        return result
+
+    def maximum(self, threshold):
+        """ fill with threshold all values which don't satisfy the maximum  """
+        result = copy(self)
+        for point in result.not_null_points_local:
+            value = result[point]
+            if value > threshold:
+                result[point] = threshold
         return result
 
     def fill(self, value):
