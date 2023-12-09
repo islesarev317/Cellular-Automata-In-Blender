@@ -39,54 +39,58 @@
 
 ### Галерея
 
-1) [Lifetime.py](examples/example-2312080014-Lifetime/Lifetime.py)
+1) [Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py)
+
+![Basic-Cube-Render.png](demos/demo-2312092116-Basic-Cube/Basic-Cube-Render.png)
+
+2) [Lifetime.py](examples/example-2312080014-Lifetime/Lifetime.py)
 
 ![Lifetime.gif](examples/example-2312080014-Lifetime/Lifetime.gif)
 
-2) [Melting-Caves.py](examples/example-2312071853-Melting-Caves/Melting-Caves.py)
+3) [Melting-Caves.py](examples/example-2312071853-Melting-Caves/Melting-Caves.py)
 
 ![Melting-Caves.gif](examples/example-2312071853-Melting-Caves/Melting-Caves.gif)
 
-3) [Cube-Life.py](examples/example-2312071646-Cube-Life/Cube-Life.py)
+4) [Cube-Life.py](examples/example-2312071646-Cube-Life/Cube-Life.py)
 
 ![Cube-Life.gif](examples/example-2312071646-Cube-Life/Cube-Life.gif)
 
-4) [Glider.py](examples/example-2312070008-Glider/Glider.py)
+5) [Glider.py](examples/example-2312070008-Glider/Glider.py)
 
 ![Glider.gif](examples/example-2312070008-Glider/Glider.gif)
 
-5) [Primitives.py](examples/example-2312051343-Primitives/Primitives.py)
+6) [Primitives.py](examples/example-2312051343-Primitives/Primitives.py)
 
 ![Primitives.png](examples/example-2312051343-Primitives/Primitives.png)
 
-6) [3d-CA.py](examples/example-2312071731-3d-CA/3d-CA.py)
+7) [3d-CA.py](examples/example-2312071731-3d-CA/3d-CA.py)
 
 ![3d-CA.gif](examples/example-2312071731-3d-CA/3d-CA-2.gif)
 
-7) [Game-Random.py](examples/example-2312071334-Game-Random/Game-Random.py)
+8) [Game-Random.py](examples/example-2312071334-Game-Random/Game-Random.py)
 
 ![Game-Random.gif](examples/example-2312071334-Game-Random/Game-Random.gif)
 
-8) [Mirror.py](examples/example-2312071413-Mirror/Mirror.py)
+9) [Mirror.py](examples/example-2312071413-Mirror/Mirror.py)
 
 ![Mirror.gif](examples/example-2312071413-Mirror/Mirror.gif)
 
-9) [Suzanne.py](examples/example-2312051257-Suzanne/Suzanne.py)
+10) [Suzanne.py](examples/example-2312051257-Suzanne/Suzanne.py)
 
 ![Suzanne.png](examples/example-2312051257-Suzanne/Suzanne.png)
 
-10) [Animation.py](examples/example-2312051635-Animation/Animation.py)
+11) [Animation.py](examples/example-2312051635-Animation/Animation.py)
 
 ![Animation.gif](examples/example-2312051635-Animation/Animation.gif)
 
-11) [Baking.py](examples/example-2312061428-Baking/Baking.py)
+12) [Baking.py](examples/example-2312061428-Baking/Baking.py)
 
 ![Baking.gif](examples/example-2312061428-Baking/Baking.gif)
 
-12) [Property.py](examples/example-2312072351-Property/Property.py)
+13) [Property.py](examples/example-2312072351-Property/Property.py)
 
 ![Property.png](examples/example-2312072351-Property/Property.png)
 
-13) [Limit-Test.py](examples/example-2312071934-Limit-Test/Limit-Test.py)
+14) [Limit-Test.py](examples/example-2312071934-Limit-Test/Limit-Test.py)
 
 ![Limit-Test.gif](examples/example-2312071934-Limit-Test/Limit-Test.gif)
