@@ -101,12 +101,13 @@ def hash_obj(obj):
     return d
 
 
-def show_label(msg, loc=(0, 0, 0)):
+def show_label(tag, msg, loc=None, collection=None, hidden=False):
 
-    collection = bpy.data.collections["Collection"]  # hardcode!
+    if collection is None:
+        collection = bpy.data.collections["Collection"]  # hardcode!
 
     # find
-    matches = (obj for obj in collection.objects if obj.name.startswith("INFO:"))
+    matches = (obj for obj in collection.objects if obj.name.startswith(tag))
     label = next(matches, None)
 
     # create
@@ -118,5 +119,7 @@ def show_label(msg, loc=(0, 0, 0)):
         collection.objects.link(label)
 
     # update
-    label.name = "INFO: " + msg
-    label.location = loc
+    label.name = tag + " " + msg
+    label.hide_viewport = hidden
+    if loc is not None:
+        label.location = loc

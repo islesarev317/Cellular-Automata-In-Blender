@@ -8,9 +8,12 @@ class Instance:
     scale_factor = 0.9
     default_limit = 3000
     prop_name = "value"
+    default_reserve = True
+    label_tag = "Instance:"
+    label_collection = None
 
-    def __init__(self, virtual_function, grain, collection, image, reserve=True, bake=False,
-                 frame_step=1, limit=default_limit, provide_prop=False):
+    def __init__(self, virtual_function, grain, collection, image, bake=False,
+                 frame_step=1, limit=default_limit, provide_prop=True):
         self.__tensor = None
         self.__start_frame = None
         self.__current_frame = None
@@ -20,7 +23,7 @@ class Instance:
         self.collection = collection
         self.image = image
         self.all_objects = {}
-        self.reserve = reserve
+        self.reserve = self.default_reserve
         self.bake = bake
         self.frame_step = frame_step
         self.limit = limit
@@ -127,7 +130,5 @@ class Instance:
         label_loc = [(curr_tensor.corner[i] + curr_tensor.dim[i] / 2) * self.grain for i in range(3)]  # center
         label_loc[2] += curr_tensor.dim[2] * self.grain  # move on the top
         if len(curr_points) > self.limit:
-            # curr_points = set(random.sample(curr_points, self.limit))  # crop set of points!
             label_msg += " (LIMIT EXCEEDED!)"
-        blu.show_label(label_msg, tuple(label_loc))
-        # return curr_points
+        blu.show_label(self.label_tag, label_msg, loc=tuple(label_loc), collection=self.label_collection)

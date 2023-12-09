@@ -210,7 +210,7 @@ class VirtualLife(VirtualFunction):
     Implementation of John Conway's Game of Life
     """
 
-    def __init__(self, rules_function, initial_function=None, lifetime=False):
+    def __init__(self, rules_function, initial_function=None, lifetime=True):
         """
         param virtual_function is virtual function which return tensor with rules in each cell of the tensor
         param initial_function is virtual function which return tensor for initialization __tensor_values

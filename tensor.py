@@ -288,7 +288,7 @@ class LocatedTensor:
             cell_rule = tensor_rules.get_global(global_point)
             cell_value = self.get_global(global_point, 0)
             neighbors = tensor_neighbors.get_global(global_point)
-            next_cell_value = next_cell_func(self.ndim, cell_rule, cell_value, neighbors)
+            next_cell_value = next_cell_func(cell_rule, cell_value, neighbors, ndim=self.ndim)
             tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next

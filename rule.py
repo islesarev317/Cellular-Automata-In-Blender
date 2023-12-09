@@ -4,7 +4,7 @@ class CellRule:
     """
 
     @classmethod
-    def get_code(cls, ndim, birth_cond, survive_cond=None):
+    def get_code(cls, birth_cond, survive_cond=None, ndim=3):
 
         # ndim = 2 --> 2-dimensional space
         # birth_cond = [3] --> a dead cell turn to life if only has 3 neighbors
@@ -39,7 +39,7 @@ class CellRule:
         return code
 
     @classmethod
-    def get_condition(cls, ndim, code):
+    def get_condition(cls, code, ndim=3):
 
         # code = 7168
 
@@ -63,16 +63,16 @@ class CellRule:
         return birth_cond, survive_cond
 
     @classmethod
-    def apply_rule_binary(cls, ndim, code, value, neighbors):
-        birth_cond, survive_cond = cls.get_condition(ndim, code)
+    def apply_rule_binary(cls, code, value, neighbors, ndim=3):
+        birth_cond, survive_cond = cls.get_condition(code, ndim=ndim)
         if value == 0:
             return int(neighbors in birth_cond)
         else:
             return int(neighbors in survive_cond)
 
     @classmethod
-    def apply_rule_lifetime(cls, ndim, code, value, neighbors):
-        birth_cond, survive_cond = cls.get_condition(ndim, code)
+    def apply_rule_lifetime(cls, code, value, neighbors, ndim=3):
+        birth_cond, survive_cond = cls.get_condition(code, ndim=ndim)
         if value == 0:
             b = int(neighbors in birth_cond)
             return b * value + b
@@ -81,5 +81,5 @@ class CellRule:
             return b * value + b
 
     @classmethod
-    def get_max_code(cls, ndim):
+    def get_max_code(cls, ndim=3):
         return 2 ** (3 ** ndim * 2) - 1
