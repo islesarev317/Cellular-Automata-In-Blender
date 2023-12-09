@@ -246,27 +246,29 @@ class LocatedTensor:
                     result[point] = 0  # set with zero if cell has max count of neighbors
         return result
 
-    def num_alive(self, global_point):
+    def num_alive(self):
         """ count the number of the alive (non-zero) neighbors (include diagonal neighbors!) """
         def get_neighbors(point, start=True):  # let point = (1, 2, 3)
-            result = []  # list for all possible neighbors
+            all_neighbors = []  # list for all possible neighbors
             for i in [0, 1, -1]:  # all possible shifts, see for 1
                 if len(point) > 1:
                     for tail in get_neighbors(point[1:], False):  # all possible tails, let see for (3, 3)
                         neighbor = (point[0] + i, *tail)  # (1 + 1, (3, 3)) => (2, 3, 3)
-                        result.append(neighbor)
+                        all_neighbors.append(neighbor)
                 else:
                     neighbor = (point[0] + i,)  # for point (1,) we get 3 options of neighbors => (1,) (2,) (0,)
-                    result.append(neighbor)
+                    all_neighbors.append(neighbor)
             if start:
-                del result[0]  # delete origin point that isn't neighbor for itself
-            return result
+                del all_neighbors[0]  # delete origin point that isn't neighbor for itself
+            return all_neighbors
 
-        num = 0
-        for neighbor_point in get_neighbors(global_point):
-            if self.get_global(neighbor_point, 0) != 0:  # we use 0 as default for getting out of range
-                num += 1
-        return num
+        result = self.zeros(tuple(self.corner), dim=self.dim)
+        for global_point in self.not_null_points_global:
+            for neighbor_point in get_neighbors(global_point):
+                cell_result = result.get_global(neighbor_point)
+                if cell_result is not None:
+                    result.set_global(neighbor_point, cell_result + 1)
+        return result
 
     def next_life(self, rules, next_cell_func):
         """ apply cellular automata rules to tensor and return next tensor state """
@@ -280,11 +282,12 @@ class LocatedTensor:
             raise TypeError("Parameter rules must be int or tensor")
 
         tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
+        tensor_neighbors = self.num_alive()
 
         for global_point in tensor_rules.not_null_points_global:  # hardcode optimization! (skip zero rule)
             cell_rule = tensor_rules.get_global(global_point)
             cell_value = self.get_global(global_point, 0)
-            neighbors = self.num_alive(global_point)
+            neighbors = tensor_neighbors.get_global(global_point)
             next_cell_value = next_cell_func(self.ndim, cell_rule, cell_value, neighbors)
             tensor_next.set_global(global_point, next_cell_value)
 
