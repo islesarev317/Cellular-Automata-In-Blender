@@ -65,7 +65,7 @@ def catch_scene(instance):
             print("ERROR in inner_catch_scene:")
             print(traceback.format_exc())
 
-    bpy.app.handlers.frame_change_pre.clear()
+    # bpy.app.handlers.frame_change_pre.clear() # it's better to clear outside
     bpy.app.handlers.frame_change_pre.append(inner_catch_scene)
 
 

@@ -281,14 +281,11 @@ class LocatedTensor:
 
         tensor_next = LocatedTensor.zeros(tuple(tensor_rules.corner), dim=tensor_rules.dim)
 
-        for global_point in tensor_rules.all_points_global:
+        for global_point in tensor_rules.not_null_points_global:  # hardcode optimization! (skip zero rule)
             cell_rule = tensor_rules.get_global(global_point)
             cell_value = self.get_global(global_point, 0)
-            if cell_rule == 0:
-                next_cell_value = 0  # hardcode optimization! (skip zero rule)
-            else:
-                neighbors = self.num_alive(global_point)
-                next_cell_value = next_cell_func(self.ndim, cell_rule, cell_value, neighbors)
+            neighbors = self.num_alive(global_point)
+            next_cell_value = next_cell_func(self.ndim, cell_rule, cell_value, neighbors)
             tensor_next.set_global(global_point, next_cell_value)
 
         return tensor_next
