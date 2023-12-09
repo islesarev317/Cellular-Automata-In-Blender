@@ -26,6 +26,7 @@
 
 - [ ] Добавление класса `VirtualProperty` связывающего заданный пользователем **параметр в Blender** и **Python объект**. Таким образом возможно будет динамически изменять некоторые параметры CA (например, правила CA) без необходимости редактирования и перезапуска управляющего скрипта *(virtual.py)*
 - [ ] Оптимизация функции `next_life` *(tensor.py)*
+  - [x] PR: [feature-next-life-optimization](https://github.com/islesarev317/Cellular-Automata-In-Blender/pull/1/commits/1477a69be686e9a066416326faa2b0ac1f7ad94c)
 - [ ] Разработка интерфейса
 
 ***
