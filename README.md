@@ -2,8 +2,6 @@
 
 ![Basic-Cube.png](demos/demo-2312092116-Basic-Cube/Basic-Cube.png)
 
-Код примера и Blender файл: [Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py), [Basic-Cube.blend](demos/demo-2312092116-Basic-Cube/Basic-Cube.blend)
-
 ***
 
 ### Описание:
