@@ -1,5 +1,11 @@
 # Клеточные автоматы в Blender
 
+![Basic-Cube.png](demos/demo-2312092116-Basic-Cube/Basic-Cube.png)
+
+Код примера и Blender файл: [Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py), [Basic-Cube.blend](demos/demo-2312092116-Basic-Cube/Basic-Cube.blend)
+
+***
+
 ### Описание:
 
 Проект представляет собой набор скриптов на языке Python для запуска в [Blender](https://www.blender.org/) и предназначен для реализации трехмерных клеточных автоматов с различными правилами.
