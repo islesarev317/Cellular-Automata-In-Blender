@@ -173,7 +173,7 @@ class LocatedTensor:
 
     def cross(self, other):
         """ logical intersection (&) """
-        return LocatedTensor.__base_ops(self, other, lambda a, b: bool(a) & bool(b))
+        return LocatedTensor.__base_ops(self, other, lambda a, b: (bool(a) & bool(b)) * a)
 
     def union(self, other):
         """ logical union (|) """
