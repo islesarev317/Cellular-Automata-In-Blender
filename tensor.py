@@ -216,11 +216,11 @@ class LocatedTensor:
             result[point] = value
         return result
 
-    def random_fill(self, values):
+    def random_fill(self, values, weights=None):
         """ set all not null points with random value """
         result = copy(self)
         for point in result.not_null_points_local:
-            result[point] = random.choice(values)
+            result[point] = np.random.choice(values, p=weights)
         return result
 
     def hollow(self):
