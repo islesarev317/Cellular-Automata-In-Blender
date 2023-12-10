@@ -36,8 +36,9 @@ image = bpy.data.objects["Image"]           # object to copy cell from
 info = bpy.data.collections["Info"]         # collection for info labels
 
 # rule
-code_flash = CellRule.get_flash_point() - 1 # all codes greater result in uncontrolled growth
-code_rand = random.randrange(code_flash)    # random rule
+code_max = CellRule.get_max_code()          # rule 18014398509481983 always keeps each cell alive
+code_flash = CellRule.get_flash_point()     # this and all codes greater result in uncontrolled growth
+code_rand = CellRule.randrange(0, 100)      # random rule by range, 100 - flash point, 200 max point
 code_maze = 17403075121982975               # rule which makes mazes
 code_cond = CellRule.get_code(birth_cond=[4, 5, 6], survive_cond=[5, 6])  # from conditions
 code_range = CellRule.get_code(birth_cond=list(range(4, 9)), survive_cond=[16, 26])  # from ranges

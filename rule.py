@@ -1,3 +1,6 @@
+import random
+
+
 class CellRule:
     """
     Class for calculate cellular automata rules and apply them
@@ -95,3 +98,10 @@ class CellRule:
     @classmethod
     def get_percent(cls, code, ndim=3):
         return round(code / cls.get_flash_point(ndim) * 100, 2)
+
+    @classmethod
+    def randrange(cls, percent_start, percent_stop, ndim=3):
+        code_start = int(percent_start / 100 * cls.get_flash_point(ndim))
+        code_stop = int(percent_stop / 100 * cls.get_flash_point(ndim))
+        code_stop = min(code_stop, cls.get_max_code(ndim))
+        return random.randrange(code_start, code_stop)
