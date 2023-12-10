@@ -131,4 +131,4 @@ class Instance:
         label_loc[2] += curr_tensor.dim[2] * self.grain  # move on the top
         if len(curr_points) > self.limit:
             label_msg += " (LIMIT EXCEEDED!)"
-        blu.show_label(self.label_tag, label_msg, loc=tuple(label_loc), collection=self.label_collection)
+        blu.show_label(self.label_tag, label_msg, loc=tuple(label_loc), collection=self.label_collection, hidden=False)

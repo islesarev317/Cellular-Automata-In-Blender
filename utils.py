@@ -101,7 +101,7 @@ def hash_obj(obj):
     return d
 
 
-def show_label(tag, msg, loc=None, collection=None, hidden=False):
+def show_label(tag, msg, loc=None, collection=None, hidden=True):
 
     if collection is None:
         collection = bpy.data.collections["Collection"]  # hardcode!

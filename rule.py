@@ -83,3 +83,15 @@ class CellRule:
     @classmethod
     def get_max_code(cls, ndim=3):
         return 2 ** (3 ** ndim * 2) - 1
+
+    @classmethod
+    def get_flash_point(cls, ndim=3):
+        """
+        all codes greater than or equal to the flash point result in uncontrolled growth
+        (birth cell while no neighbors)
+        """
+        return 2 ** (3 ** ndim * 2 - 1)
+
+    @classmethod
+    def get_percent(cls, code, ndim=3):
+        return round(code / cls.get_flash_point(ndim) * 100, 2)
