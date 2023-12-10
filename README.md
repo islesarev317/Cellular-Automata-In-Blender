@@ -39,7 +39,7 @@
 
 1) [Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py)
 
-![Basic-Cube-Render.png](demos/demo-2312092116-Basic-Cube/Basic-Cube-Render.png)
+![Basic-Cube-Render.png](demos/demo-2312092116-Basic-Cube/Basic-Cube.png)
 
 2) [Lifetime.py](examples/example-2312080014-Lifetime/Lifetime.py)
 
