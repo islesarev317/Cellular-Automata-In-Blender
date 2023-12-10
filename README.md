@@ -35,7 +35,7 @@
 
 1) [Grow-Seeds.py](demos/demo-2312101625-Grow-Seeds/Grow-Seeds.py)
 
-![Grow-Seeds.gif](demos/demo-2312101625-Grow-Seeds/Grow-Seeds.gif)
+...
 
 2) [Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py)
 
