@@ -33,8 +33,11 @@
 
 ### Галерея
 
-#### *[demos/demo-2312111224-Growing-Sphere](demos/demo-2312111224-Growing-Sphere)*
+
+[![Cellular Automata in Blender Python Scripting - YouTube](demos/demo-2312111224-Growing-Sphere/Pre-Screen-YouTube.png)](https://www.youtube.com/watch?v=s1DLh8MZMMQ)
 
 ![Growing-Sphere.gif](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.gif)
 
 ![Growing-Sphere.png](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.png)
+
+**Файлы:** *[/demos/demo-2312111224-Growing-Sphere/](demos/demo-2312111224-Growing-Sphere)*
