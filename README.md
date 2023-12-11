@@ -33,62 +33,8 @@
 
 ### Галерея
 
-1) [Grow-Seeds.py](demos/demo-2312101625-Grow-Seeds/Grow-Seeds.py)
+#### *[demos/demo-2312111224-Growing-Sphere](demos/demo-2312111224-Growing-Sphere)*
 
-![Grow-Seeds.gif](demos/demo-2312101625-Grow-Seeds/Grow-Seeds.gif)
+![Growing-Sphere.gif](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.gif)
 
-2) [Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py)
-
-![Basic-Cube-Render.png](demos/demo-2312092116-Basic-Cube/Basic-Cube.png)
-
-3) [Lifetime.py](examples/example-2312080014-Lifetime/Lifetime.py)
-
-![Lifetime.gif](examples/example-2312080014-Lifetime/Lifetime.gif)
-
-4) [Melting-Caves.py](examples/example-2312071853-Melting-Caves/Melting-Caves.py)
-
-![Melting-Caves.gif](examples/example-2312071853-Melting-Caves/Melting-Caves.gif)
-
-5) [Cube-Life.py](examples/example-2312071646-Cube-Life/Cube-Life.py)
-
-![Cube-Life.gif](examples/example-2312071646-Cube-Life/Cube-Life.gif)
-
-6) [Glider.py](examples/example-2312070008-Glider/Glider.py)
-
-![Glider.gif](examples/example-2312070008-Glider/Glider.gif)
-
-7) [Primitives.py](examples/example-2312051343-Primitives/Primitives.py)
-
-![Primitives.png](examples/example-2312051343-Primitives/Primitives.png)
-
-8) [3d-CA.py](examples/example-2312071731-3d-CA/3d-CA.py)
-
-![3d-CA.gif](examples/example-2312071731-3d-CA/3d-CA-2.gif)
-
-9) [Game-Random.py](examples/example-2312071334-Game-Random/Game-Random.py)
-
-![Game-Random.gif](examples/example-2312071334-Game-Random/Game-Random.gif)
-
-10) [Mirror.py](examples/example-2312071413-Mirror/Mirror.py)
-
-![Mirror.gif](examples/example-2312071413-Mirror/Mirror.gif)
-
-11) [Suzanne.py](examples/example-2312051257-Suzanne/Suzanne.py)
-
-![Suzanne.png](examples/example-2312051257-Suzanne/Suzanne.png)
-
-12) [Animation.py](examples/example-2312051635-Animation/Animation.py)
-
-![Animation.gif](examples/example-2312051635-Animation/Animation.gif)
-
-13) [Baking.py](examples/example-2312061428-Baking/Baking.py)
-
-![Baking.gif](examples/example-2312061428-Baking/Baking.gif)
-
-14) [Property.py](examples/example-2312072351-Property/Property.py)
-
-![Property.png](examples/example-2312072351-Property/Property.png)
-
-15) [Limit-Test.py](examples/example-2312071934-Limit-Test/Limit-Test.py)
-
-![Limit-Test.gif](examples/example-2312071934-Limit-Test/Limit-Test.gif)
+![Growing-Sphere.png](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.png)
