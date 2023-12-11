@@ -33,7 +33,7 @@
 
 ### Галерея
 
-#### *demos/demo-2312111224-Growing-Sphere*
+#### *[demos/demo-2312111224-Growing-Sphere](demos/demo-2312111224-Growing-Sphere)*
 
 ![Growing-Sphere.gif](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.gif)
 
