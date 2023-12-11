@@ -40,4 +40,6 @@
 
 ![Growing-Sphere.png](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.png)
 
-**Файлы:** *[/demos/demo-2312111224-Growing-Sphere/](demos/demo-2312111224-Growing-Sphere)*
+**Файлы:** *[demos/demo-2312111224-Growing-Sphere/](demos/demo-2312111224-Growing-Sphere)*
+
+Также больше примеров можно увидеть в разделах: *[demos](demos) и [examples](examples)* 
