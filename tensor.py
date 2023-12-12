@@ -5,7 +5,7 @@ from copy import copy
 
 class LocatedTensor:
     """
-    the class implements a pair of an N dimensional tensor and a vector which contained N element
+    the class implements a pair of an N dimensional tensor and a vector which contained N elements
     """
 
     # ----------------- Class creators ----------------- #
