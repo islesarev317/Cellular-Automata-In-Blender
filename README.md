@@ -24,8 +24,8 @@
 
 ### TODO
 
-- [ ] Добавление класса `VirtualProperty` связывающего заданный пользователем **параметр в Blender** и **Python объект**. Таким образом возможно будет динамически изменять некоторые параметры CA (например, правила CA) без необходимости редактирования и перезапуска управляющего скрипта *(virtual.py)*
-- [ ] Оптимизация функции `next_life` *(tensor.py)*
+- [ ] Добавление класса `VirtualProperty` связывающего заданный пользователем **параметр в Blender** и **Python объект**. Таким образом возможно будет динамически изменять некоторые параметры CA (например, правила CA) без необходимости редактирования и перезапуска управляющего скрипта
+- [ ] Оптимизация функции `next_life`
   - [x] PR: [feature-next-life-optimization](https://github.com/islesarev317/Cellular-Automata-In-Blender/pull/1/commits/1477a69be686e9a066416326faa2b0ac1f7ad94c)
 - [ ] Разработка интерфейса
 
@@ -33,8 +33,13 @@
 
 ### Галерея
 
-#### *[demos/demo-2312111224-Growing-Sphere](demos/demo-2312111224-Growing-Sphere)*
+
+[![Cellular Automata in Blender Python Scripting - YouTube](demos/demo-2312111224-Growing-Sphere/Pre-Screen-YouTube.png)](https://www.youtube.com/watch?v=s1DLh8MZMMQ)
 
 ![Growing-Sphere.gif](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.gif)
 
 ![Growing-Sphere.png](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.png)
+
+**Файлы:** *[demos/demo-2312111224-Growing-Sphere/](demos/demo-2312111224-Growing-Sphere)*
+
+Также больше примеров можно увидеть в разделах: *[demos](demos) и [examples](examples)* 
