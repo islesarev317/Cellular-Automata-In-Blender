@@ -1,4 +1,4 @@
-# Cellular Automata in Blender
+# Cellular Automata in Blender 👾
 
 ## Description
 
@@ -12,7 +12,7 @@ I would be glad if this project helps you create unique 3D cellular automata in 
 
 ***
 
-# Клеточные автоматы в Blender
+# Клеточные автоматы в Blender 🧩
 
 ## Описание
 
