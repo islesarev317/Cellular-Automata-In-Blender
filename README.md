@@ -33,6 +33,7 @@
 
 ### Галерея
 
+#### 1. Growing-Sphere
 
 [![Cellular Automata in Blender Python Scripting - YouTube](demos/demo-2312111224-Growing-Sphere/Pre-Screen-YouTube.png)](https://www.youtube.com/watch?v=s1DLh8MZMMQ)
 
@@ -40,6 +41,47 @@
 
 ![Growing-Sphere.png](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.png)
 
-**Файлы:** *[demos/demo-2312111224-Growing-Sphere/](demos/demo-2312111224-Growing-Sphere)*
+- **Скрипт:** *[Growing-Sphere.py](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.py)*
+- **Blender файл:** *[Growing-Sphere.blend](demos/demo-2312111224-Growing-Sphere/Growing-Sphere.blend)*
+- **Описание:**
+  - Инициализируем сферу как **VirtualObject** экземпляр и заполняем значениями
+    - `sphere = VirtualObject(bpy.data.objects["Sphere"], grain)`
+    - `vf_init = sphere.fill(1)`
+  - Получаем трехмерную матрицу заполненую **1** в местах пересечения со сферой и **0** в прилегающих областях
+  - Аналогично инициализируем куб и заполняем случайным кодом клеточного автомата
+    - `cube = VirtualObject(bpy.data.objects["Cube"], grain)`
+    - `vf_rule = cube.fill(code_rand)`
+  - Код случайного правила можно увидеть в окне **Outliner** в коллеции **Info**. Расшифровки кода в скрипте нет, но можно использовать вызов:
+    - `CellRule.get_condition(code_rand)`
+  - Создаем экземпляр клеточного автомата с данным правилом и начальными условиями в виде сферы
+    - `vf_life = VirtualLife(vf_rule, vf_init)`
+  - В целях оптимизации и уменьшения количества отображаемых кубов в Blender, убираем все внутренние клетки. Эта функция никак не влияет на расчет состояний клеточного автомата
+    - `vf_life = vf_life.hollow()`
 
-Также больше примеров можно увидеть в разделах: *[demos](demos) и [examples](examples)* 
+***
+#### 2. Basic-Cube
+
+![Basic-Cube.gif](demos/demo-2312092116-Basic-Cube/Basic-Cube.gif)
+
+![Basic-Cube.png](demos/demo-2312092116-Basic-Cube/Basic-Cube.png)
+
+- **Скрипт:** *[Basic-Cube.py](demos/demo-2312092116-Basic-Cube/Basic-Cube.py)*
+- **Blender файл:** *[Basic-Cube.blend](demos/demo-2312092116-Basic-Cube/Basic-Cube.blend)*
+- **Описание:**
+  - Куб заполняем случайным образом заначениями **0** и **1** в соотношении **90:10**
+    - `vf_init = cube.random_fill([0, 1], weights=[0.9, 0.1])`
+  - Полученную трехмерную матрицу отзеркаливаем по всем осям для получения симметрии
+    - `vf_init = vf_init.mirror()`
+  - Тот же куб используем для создания матрицы заполненной кодом правила клеточного автомата
+    - `vf_rule = cube.fill(code_maze)`
+    - Код можно расшифровать вызовом `CellRule.get_condition(8259390827203093)`, получим:
+      - B = `[1, 6, 7, 9, 10, 13, 21, 22]` (условия рождения)
+      - S = `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16, 18, 24, 25, 26]` (условия выживания)
+  - Создаем экземпляр клеточного автомата с данным правилом и случайными начальными условиями
+    - `vf_life = VirtualLife(vf_rule, vf_init)`
+  - В целях оптимизации и уменьшения количества отображаемых кубов в Blender, убираем все внутренние клетки. Эта функция никак не влияет на расчет состояний клеточного автомата
+    - `vf_life = vf_life.hollow()`
+
+***
+
+Также больше примеров можно увидеть в разделe: *[examples](examples)* 
