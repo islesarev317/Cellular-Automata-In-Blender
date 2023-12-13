@@ -28,6 +28,7 @@
 - [ ] Оптимизация функции `next_life`
   - [x] PR: [feature-next-life-optimization](https://github.com/islesarev317/Cellular-Automata-In-Blender/pull/1/commits/1477a69be686e9a066416326faa2b0ac1f7ad94c)
 - [ ] Разработка интерфейса
+- [ ] Методы для работы с правилами CA: поиск ближайших похожих; получение случайного по заданным коэффициентам выживаемости и рождаемости
 
 ***
 
