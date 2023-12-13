@@ -1,6 +1,6 @@
 # Cellular Automata in Blender
 
-### Description:
+## Description
 
 The project is a set of scripts in Python to run in [Blender](https://www.blender.org/) and is designed to implement three-dimensional cellular automata with various rules.
 
@@ -14,7 +14,7 @@ I would be glad if this project helps you create unique 3D cellular automata in 
 
 # Клеточные автоматы в Blender
 
-### Описание:
+## Описание
 
 Проект представляет собой набор скриптов на языке Python для запуска в [Blender](https://www.blender.org/) и предназначен для реализации трехмерных клеточных автоматов с различными правилами.
 
@@ -24,9 +24,7 @@ I would be glad if this project helps you create unique 3D cellular automata in 
 
 Буду рад, если этот проект поможет вам создавать уникальные трехмерные клеточные автоматы в Blender и откроет новые возможности для вашего творчества.
 
-***
-
-### Функционал проекта:
+## Функционал проекта:
 
 - [tensor.py](tensor.py) - модуль для работы с трехмерными матрицами на основе `numpy`. [(Схема)](https://github.com/islesarev317/NumPy-Education/assets/78931652/b63a2a5c-01b2-4d98-90f2-40549df5325e)
 - [virtual.py](virtual.py) - модуль для преобразования объектов в трехмерные матрицы с возможностью задавать формулу сочетания матриц и пересчитывать результат при изменении первичных объектов. [(Схема)](https://github.com/islesarev317/NumPy-Education/assets/78931652/29157797-a1e6-4f24-8c79-62d8ac8fa0c1)
@@ -34,9 +32,7 @@ I would be glad if this project helps you create unique 3D cellular automata in 
 - [instance.py](instance.py) - модуль реализующий отображение трехмерных матриц в Blender, каждому ненулевому значению матрицы сопоставляется объект. Также предусмотрено переиспользование объектов в целях оптимизации при создании анимации.
 - [utils.py](utils.py) - набор различных функций, инкапсулирующих логику работы с модулем `bpy`.
 
-***
-
-### TODO
+## TODO
 
 - [ ] Добавление класса `VirtualProperty` связывающего заданный пользователем **параметр в Blender** и **Python объект**. Таким образом возможно будет динамически изменять некоторые параметры CA (например, правила CA) без необходимости редактирования и перезапуска управляющего скрипта
 - [ ] Оптимизация функции `next_life`
@@ -44,11 +40,9 @@ I would be glad if this project helps you create unique 3D cellular automata in 
 - [ ] Разработка интерфейса
 - [ ] Методы для работы с правилами CA: поиск ближайших похожих; получение случайного по заданным коэффициентам выживаемости и рождаемости
 
-***
+## Галерея
 
-### Галерея
-
-#### 1. Growing-Sphere
+### 1. Growing-Sphere
 
 [![Cellular Automata in Blender Python Scripting - YouTube](demos/demo-2312111224-Growing-Sphere/Pre-Screen-YouTube.png)](https://www.youtube.com/watch?v=s1DLh8MZMMQ)
 
@@ -74,8 +68,7 @@ I would be glad if this project helps you create unique 3D cellular automata in 
     - `vf_life = vf_life.hollow()`
   - Время жизни клетки по умолчанию передается в `Custom Property` с именем `value`, используем этот параметр в материале объекта для покраски клетки в разные цвета.
 
-***
-#### 2. Basic-Cube
+### 2. Basic-Cube
 
 ![Basic-Cube.gif](demos/demo-2312092116-Basic-Cube/Basic-Cube.gif)
 
