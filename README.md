@@ -1,3 +1,17 @@
+# Cellular Automata in Blender
+
+### Description:
+
+The project is a set of scripts in Python to run in [Blender](https://www.blender.org/) and is designed to implement three-dimensional cellular automata with various rules.
+
+The main idea of the project is the possibility of combining three-dimensional cellular automata with different rules in one space. For this purpose, it is possible to mark areas with such rules using primitive objects, which, after creation, are converted into three-dimensional matrices. These matrices dynamically recalculate their values when the primary object changes.
+
+To make it easier to work with matrices, various functions have been implemented. You can combine and aggregate matrices using functions to combine, subtract, and produce a hollow object.
+
+I would be glad if this project helps you create unique 3D cellular automata in Blender and opens up new possibilities for your creativity.
+
+***
+
 # Клеточные автоматы в Blender
 
 ### Описание:
