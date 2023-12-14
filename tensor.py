@@ -30,14 +30,6 @@ class LocatedTensor:
         value = np.zeros(dim, dtype=int)
         return cls(corner, value)
 
-    @classmethod
-    def binary_random(cls, corner=None, *, dim, density=0.5):
-        """ create tensor with random filling """
-        if corner is None:
-            corner = tuple(np.zeros(len(dim)).astype(int))  # set default value if it's necessary
-        value = np.random.choice([0, 1], np.prod(list(dim)), p=[1-density, density]).reshape(dim)
-        return cls(corner, value)
-
     # ----------------- Values ----------------- #
 
     def __getitem__(self, key):
