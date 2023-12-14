@@ -177,7 +177,7 @@ class LocatedTensor:
 
     def union(self, other):
         """ logical union (|) """
-        return LocatedTensor.__base_ops(self, other, lambda a, b: bool(a) | bool(b))
+        return LocatedTensor.__base_ops(self, other, lambda a, b: (bool(a) | bool(b)) * a)
 
     def diff(self, other):
         """ logical difference (%)"""
