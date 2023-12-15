@@ -12,7 +12,7 @@ class Instance:
     label_tag = "Instance:"
     label_collection = None
 
-    def __init__(self, virtual_function, grain, collection, image, bake=False,
+    def __init__(self, virtual_function, grain, collection, image, bake=True,
                  frame_step=1, limit=default_limit, provide_prop=True):
         self.__tensor = None
         self.__start_frame = None
